@@ -27,6 +27,8 @@ half3 SampleGradientRGB(Gradient Gradient, half Time)
 // -------------------------------------
 // Shader Graph Custom Functions
 // -------------------------------------
+
+
 void MainLight_float(float3 WorldPosition, float3 WorldNormal, float3 ViewDirection, float3 CameraDirection,
     float3 AmbientColor, Texture2D ShadingRamp, SamplerState ShadingSampler, float BacklightStrength, float3 EdgeShineColor,
     float3 DiffuseTexture, float3 DiffuseColor, float3 NormalMap, float NormalMapStrength, float3 SpecularColor,

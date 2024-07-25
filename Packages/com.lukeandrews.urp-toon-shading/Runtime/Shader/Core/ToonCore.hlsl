@@ -104,14 +104,11 @@ float4 TransformWorldToShadowCoord_Unlit(float3 positionWS)
     return mul(_MainLightWorldToShadow[cascadeIndex], float4(positionWS, 1.0));
 }
 
-real SampleShadowmap_Unlit(TEXTURE2D_SHADOW_PARAM( ShadowMap, sampler_ShadowMap),
-float4 shadowCoord, ShadowSamplingDatasamplingData,
-half4 shadowParams, bool isPerspectiveProjection = true)
+real SampleShadowmap_Unlit(TEXTURE2D_SHADOW_PARAM(ShadowMap, sampler_ShadowMap), float4 shadowCoord, ShadowSamplingData samplingData, half4 shadowParams, bool isPerspectiveProjection = true)
 {
     // Compiler will optimize this branch away as long as isPerspectiveProjection is known at compile time
     if (isPerspectiveProjection)
-        shadowCoord.xyz /= shadowCoord.
-w;
+        shadowCoord.xyz /= shadowCoord.w;
 
     real attenuation;
     real shadowStrength = shadowParams.x;
@@ -126,8 +123,7 @@ w;
 
     // Shadow coords that fall out of the light frustum volume must always return attenuation 1.0
     // TODO: We could use branch here to save some perf on some platforms.
-    return BEYOND_SHADOW_FAR(shadowCoord) ? 1.0 :
-attenuation;
+    return BEYOND_SHADOW_FAR(shadowCoord) ? 1.0 : attenuation;
 }
 
 half MainLightRealtimeShadow_Unlit(float4 shadowCoord)
@@ -191,14 +187,11 @@ float4 TransformWorldToShadowCoord_Toon(float3 positionWS)
 #endif
 }
 
-real SampleShadowmap_Toon(TEXTURE2D_SHADOW_PARAM( ShadowMap, sampler_ShadowMap),
-float4 shadowCoord, ShadowSamplingDatasamplingData,
-half4 shadowParams, bool isPerspectiveProjection = true)
+real SampleShadowmap_Toon(TEXTURE2D_SHADOW_PARAM(ShadowMap, sampler_ShadowMap), float4 shadowCoord, ShadowSamplingData samplingData, half4 shadowParams, bool isPerspectiveProjection = true)
 {
     // Compiler will optimize this branch away as long as isPerspectiveProjection is known at compile time
     if (isPerspectiveProjection)
-        shadowCoord.xyz /= shadowCoord.
-w;
+        shadowCoord.xyz /= shadowCoord.w;
 
     real attenuation;
     real shadowStrength = shadowParams.x;
@@ -213,8 +206,7 @@ w;
 
     // Shadow coords that fall out of the light frustum volume must always return attenuation 1.0
     // TODO: We could use branch here to save some perf on some platforms.
-    return BEYOND_SHADOW_FAR(shadowCoord) ? 1.0 :
-attenuation;
+    return BEYOND_SHADOW_FAR(shadowCoord) ? 1.0 : attenuation;
 }
 
 half MainLightRealtimeShadow_Toon(float4 shadowCoord)
@@ -431,7 +423,7 @@ half3 RGBtoHSV(half3 In)
     half4 P = lerp(half4(In.bg, K.wz), half4(In.gb, K.xy), step(In.b, In.g));
     half4 Q = lerp(half4(P.xyw, In.r), half4(In.r, P.yzx), step(P.x, In.r));
     half D = Q.x - min(Q.w, Q.y);
-    half E = 1e-10;
+    half  E = 1e-10;
     return half3(abs(Q.z + (Q.w - Q.y) / (6.0 * D + E)), D / (Q.x + E), Q.x);
 }
 
@@ -459,7 +451,7 @@ half FresnelEffect(half sNdotV, half Power)
 
 half3 CameraDirection()
 {
-    return -1 * mul((float3x3) UNITY_MATRIX_M, UNITY_MATRIX_IT_MV[2].xyz);
+    return -1 * mul((float3x3)UNITY_MATRIX_M, UNITY_MATRIX_IT_MV[2].xyz);
 }
 
 float2 RotateUV(float2 uv, half2 centre, half rotation)
@@ -504,7 +496,7 @@ half3 ToonDirectSpecular(half3 lightColor, half3 lightDir, half3 normal, half3 v
 {
     //smoothness = exp2(10 * smoothness + 1);
 
-    float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
+    float3 halfVec = SafeNormalize(float3(lightDir)+float3(viewDir));
     half NdotH = saturate(dot(normal, halfVec));
     half modifier = pow(NdotH, smoothnessExp);
     half3 specularReflection = specular * modifier;
@@ -515,7 +507,7 @@ half ToonDirectSpecularValue(half3 lightDir, half3 normal, half3 viewDir, half s
 {
     //smoothness = exp2(10 * smoothness + 1);
 
-    float3 halfVec = SafeNormalize(float3(lightDir) + float3(viewDir));
+    float3 halfVec = SafeNormalize(float3(lightDir)+float3(viewDir));
     half NdotH = saturate(dot(normal, halfVec));
     return pow(NdotH, smoothnessExp);
 }
@@ -525,7 +517,7 @@ half3 ToonHardEdgeShine(half3 lightColor, half3 lightDir, half3 normal, half3 vi
     half vl = (dot(viewDir, lightDir) * -1.0) + -0.5;
     half nl = (dot(normal, lightDir) + -0.3) * 4;
     float edge = clamp((vl + nl) * -1.0, 0.2, 1.1);
-    return step(edge, FresnelEffect(normal, viewDir, 8)) * lightColor;
+    return step(edge, FresnelEffect(normal, viewDir, 8)) *lightColor;
 }
 
 half3 ToonHardEdgeShine(half3 lightColor, half VdotL, half NdotL, half sVdotN)
@@ -614,7 +606,7 @@ half3 ToonMainLightDiffuse(Light mainLight, half3 normalWS, half3 viewDir, half3
     return color;
 }
 
-half3 ToonAdditionalLightDiffuse(half3 lightDir, half3 attenuatedLightColor, half3 normalWS, half3 viewDir, half3 cameraDir, half occlusion, half backlightStrength,
+half3 ToonAdditionalLightDiffuse(half3 lightDir, half3 attenuatedLightColor, half3 normalWS, half3 viewDir, half3 cameraDir, half occlusion, half backlightStrength, 
     ToonColorGradient shadingRamp)
 {
     half shade = Remap(dot(lightDir, normalWS), half2(-0.5, 1.0), half2(0.0, 1.0));
