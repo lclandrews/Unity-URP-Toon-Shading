@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 namespace UnityEditor.Rendering.Universal.ShaderGUI
 {
-    public static class SimpleToonGUI
+    public static class ToonGUI
     {
 
         public struct ToonSimpleProperties

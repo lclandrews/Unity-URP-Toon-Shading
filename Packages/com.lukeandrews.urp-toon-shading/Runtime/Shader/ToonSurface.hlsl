@@ -1,7 +1,7 @@
-#ifndef TOON_SIMPLE_SURFACE_INCLUDED
-#define TOON_SIMPLE_SURFACE_INCLUDED
+#ifndef TOON_SURFACE_INCLUDED
+#define TOON_SURFACE_INCLUDED
 
-struct ToonSimpleSurfaceData
+struct ToonSurfaceData
 {
     half3 albedo;
     half3 specular;
@@ -13,7 +13,7 @@ struct ToonSimpleSurfaceData
     half  alpha;
 };
 
-inline void InitToonSimpleSurfaceData(float2 uv, out ToonSimpleSurfaceData outData)
+inline void InitToonSurfaceData(float2 uv, out ToonSurfaceData outData)
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
     outData.albedo = albedoAlpha.rgb * _BaseColor.rgb;

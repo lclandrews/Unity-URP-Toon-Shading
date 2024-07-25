@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace UnityEditor.Rendering.Universal.ShaderGUI
 {
-    internal class ToonSimpleShader : BaseShaderGUI
+    internal class ToonShader : BaseShaderGUI
     {
         // Save editor flags
 
@@ -32,7 +32,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
         SavedFloat m_globalEdge;        
 
         // Properties
-        private SimpleToonGUI.ToonSimpleProperties toonStandardProperties;        
+        private ToonGUI.ToonSimpleProperties toonStandardProperties;        
 
 
         // collect properties from the material properties
@@ -48,7 +48,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             emissionMapProp = FindProperty("_EmissionMap", properties, false);
             emissionColorProp = FindProperty("_EmissionColor", properties, false);
             queueOffsetProp = FindProperty("_QueueOffset", properties, false);
-            toonStandardProperties = new SimpleToonGUI.ToonSimpleProperties(properties);
+            toonStandardProperties = new ToonGUI.ToonSimpleProperties(properties);
         }
 
         public override void OnGUI(MaterialEditor materialEditorIn, MaterialProperty[] properties)
@@ -80,22 +80,22 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             m_SurfaceInputsFoldout = new SavedBool($"{m_HeaderStateKey}.SurfaceInputsFoldout", true);
             m_AdvancedFoldout = new SavedBool($"{m_HeaderStateKey}.AdvancedFoldout", false);
 
-            m_globalAmbient = new SavedString(ToonMainValues.uiKeyPrefix + ToonMainValues.ambientHeader, SavedString.GetDefaultColorString());
+            m_globalAmbient = new SavedString(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.ambientHeader, SavedString.GetDefaultColorString());
             Shader.SetGlobalColor("_AmbientColor", m_globalAmbient.GetValueAsColor());
 
-            m_globalMainShadow = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.sufaceShadowHeader, ToonMainValues.sShadowDefault);
+            m_globalMainShadow = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.sufaceShadowHeader, ToonDefaultValues.sShadowDefault);
             Shader.SetGlobalFloat("_SurfaceShadowLimit", m_globalMainShadow.value);
-            m_globalMainHighlight = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.sufaceHighlightHeader, ToonMainValues.sHighlightDefault);
+            m_globalMainHighlight = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.sufaceHighlightHeader, ToonDefaultValues.sHighlightDefault);
             Shader.SetGlobalFloat("_SurfaceHighlightLimit", m_globalMainHighlight.value);
 
-            m_globalAddShadow = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.attenuationShadowHeader, ToonMainValues.aShadowDefault);
+            m_globalAddShadow = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.attenuationShadowHeader, ToonDefaultValues.aShadowDefault);
             Shader.SetGlobalFloat("_AttenuationShadowLimit", m_globalAddShadow.value);
-            m_globalAddHighlight = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.attenuationHighlightHeader, ToonMainValues.aHighlightDefault);
+            m_globalAddHighlight = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.attenuationHighlightHeader, ToonDefaultValues.aHighlightDefault);
             Shader.SetGlobalFloat("_AttenuationHighlightLimit", m_globalAddHighlight.value);
 
-            m_globalMidtone = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.midToneHeader, ToonMainValues.midtoneDefault);
+            m_globalMidtone = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.midToneHeader, ToonDefaultValues.midtoneDefault);
             Shader.SetGlobalFloat("_MidtoneValue", m_globalMidtone.value);
-            m_globalEdge = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.edgeSoftnessHeader, ToonMainValues.edgeDefault);
+            m_globalEdge = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.edgeSoftnessHeader, ToonDefaultValues.edgeDefault);
             Shader.SetGlobalFloat("_EdgeSoftness", m_globalEdge.value);
 
             foreach (var obj in materialEditor.targets)
@@ -156,7 +156,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             if (material == null)
                 throw new ArgumentNullException("material");
 
-            SimpleToonGUI.SetMaterialKeywords(material);
+            ToonGUI.SetMaterialKeywords(material);
         }
 
         // material main surface options
@@ -232,7 +232,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float mShadow = Shader.GetGlobalFloat("_SurfaceShadowLimit");
             mShadow = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.mainShadowText, mShadow, ToonMainValues.sShadowRangeMin, ToonMainValues.sShadowRangeMax);
+                ToonMainGUI.Styles.mainShadowText, mShadow, ToonDefaultValues.sShadowRangeMin, ToonDefaultValues.sShadowRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_SurfaceShadowLimit", mShadow);
@@ -242,7 +242,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float mHighlight = Shader.GetGlobalFloat("_SurfaceHighlightLimit");
             mHighlight = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.mainLightEdgeText, mHighlight, ToonMainValues.sHighlightRangeMin, ToonMainValues.sHighlightRangeMax);
+                ToonMainGUI.Styles.mainLightEdgeText, mHighlight, ToonDefaultValues.sHighlightRangeMin, ToonDefaultValues.sHighlightRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_SurfaceHighlightLimit", mHighlight);
@@ -258,7 +258,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float aShadow = Shader.GetGlobalFloat("_AttenuationShadowLimit");
             aShadow = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.addShadowText, aShadow, ToonMainValues.aShadowRangeMin, ToonMainValues.aShadowRangeMax);
+                ToonMainGUI.Styles.addShadowText, aShadow, ToonDefaultValues.aShadowRangeMin, ToonDefaultValues.aShadowRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_AttenuationShadowLimit", aShadow);
@@ -268,7 +268,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float aHighlight = Shader.GetGlobalFloat("_AttenuationHighlightLimit");
             aHighlight = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.addLightEdgeText, aHighlight, ToonMainValues.aHighlightRangeMin, ToonMainValues.aHighlightRangeMax);
+                ToonMainGUI.Styles.addLightEdgeText, aHighlight, ToonDefaultValues.aHighlightRangeMin, ToonDefaultValues.aHighlightRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_AttenuationHighlightLimit", aHighlight);
@@ -280,7 +280,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float midtone = Shader.GetGlobalFloat("_MidtoneValue");
             midtone = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.midToneText, midtone, ToonMainValues.midtoneRangeMin, ToonMainValues.midtoneRangeMax);
+                ToonMainGUI.Styles.midToneText, midtone, ToonDefaultValues.midtoneRangeMin, ToonDefaultValues.midtoneRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_MidtoneValue", midtone);
@@ -290,7 +290,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float edge = Shader.GetGlobalFloat("_EdgeSoftness");
             edge = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.edgeSoftnessText, edge, ToonMainValues.edgeRangeMin, ToonMainValues.edgeRangeMax);
+                ToonMainGUI.Styles.edgeSoftnessText, edge, ToonDefaultValues.edgeRangeMin, ToonDefaultValues.edgeRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_EdgeSoftness", edge);
@@ -309,7 +309,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             }
         }
 
-        public void DrawBacklightArea(SimpleToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
+        public void DrawBacklightArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
         {
             bool backlightEnabled = alphaClipProp.floatValue == 0.0f;
 
@@ -339,7 +339,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             }
         }
 
-        public void DrawEdgeShineArea(SimpleToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
+        public void DrawEdgeShineArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
         {
             bool edgeShineEnabled = alphaClipProp.floatValue == 0.0f;
 
@@ -384,7 +384,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             }            
         }
 
-        public void DrawMaskMapArea(SimpleToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
+        public void DrawMaskMapArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
         {
             if (properties.maskMap != null)
             {
@@ -422,7 +422,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             }
         }
 
-        public void DrawSpecularArea(SimpleToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
+        public void DrawSpecularArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
         {
             EditorGUI.BeginChangeCheck();
             materialEditor.ShaderProperty(properties.specular, ToonMainGUI.Styles.highlightsText);
@@ -457,7 +457,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.EndDisabledGroup();
         }
 
-        public void DrawSpecularTextureArea(SimpleToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
+        public void DrawSpecularTextureArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
         {
             //EditorGUI.BeginDisabledGroup(toonStandardProperties.specular.floatValue == 0.0f);
             if (toonStandardProperties.specular.floatValue == 1.0f)

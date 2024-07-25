@@ -1,4 +1,4 @@
-#ifndef TOON_SIMPLE_VERT_PASS_INCLUDED
+#ifndef TOON_VERT_PASS_INCLUDED
 #define TOON_SIPLE_VERT_PASS_INCLUDED
 
 struct Attributes
@@ -48,9 +48,9 @@ struct Varyings
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-#include "ToonSimpleInputData.hlsl"
+#include "ToonInputData.hlsl"
 
-Varyings ToonSimplePassVertex(Attributes input)
+Varyings ToonPassVertex(Attributes input)
 {
     Varyings output = (Varyings)0;
 

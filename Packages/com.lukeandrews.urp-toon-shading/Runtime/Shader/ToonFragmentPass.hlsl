@@ -1,22 +1,22 @@
-#ifndef TOON_SIMPLE_FRAG_PASS_INCLUDED
-#define TOON_SIMPLE_FRAG_PASS_INCLUDED
+#ifndef TOON_FRAG_PASS_INCLUDED
+#define TOON_FRAG_PASS_INCLUDED
 
-#include "ToonSimpleSurface.hlsl" 
+#include "ToonSurface.hlsl" 
 
-half4 ToonSimplePassFragment(Varyings input) : SV_Target
+half4 ToonPassFragment(Varyings input) : SV_Target
 {
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     float2 uv = float2(input.uAndNormalWS.x, input.vAndViewDirWS.x);
 
-    ToonSimpleSurfaceData surfaceData;
-    InitToonSimpleSurfaceData(uv, surfaceData);
+    ToonSurfaceData surfaceData;
+    InitToonSurfaceData(uv, surfaceData);
 
-    ToonSimpleInputData inputData;
-    InitToonSimpleInputData(input, surfaceData.normalTS, inputData);
+    ToonInputData inputData;
+    InitToonInputData(input, surfaceData.normalTS, inputData);
 
-    Light mainLight = GetMainLight_Toon(inputData.shadowCoord);
+    Light mainLight = GetMainLight(inputData.shadowCoord);
 
 #if !defined(_BACKLIGHT_OFF) || !defined(_EDGESHINE_OFF)
     half sVdotN = saturate(dot(inputData.viewDirectionWS, inputData.normalWS));
@@ -45,7 +45,7 @@ half4 ToonSimplePassFragment(Varyings input) : SV_Target
     int pixelLightCount = GetAdditionalLightsCount();
     for (int i = 0; i < pixelLightCount; ++i)
     {
-        Light additionalLight = GetAdditionalLight_Toon(i, inputData.positionWS);
+        Light additionalLight = GetAdditionalLight(i, inputData.positionWS);
         half NdotAL = dot(inputData.normalWS, additionalLight.direction);
 
         half aSteppedShade = GetSmoothStepShading(NdotAL, additionalLight.shadowAttenuation * surfaceData.occlusion, _SurfaceShadowLimit, _SurfaceHighlightLimit, _MidtoneValue, _EdgeSoftness);

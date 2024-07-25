@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ToonShader;
 
-public class SimpleRampController : MonoBehaviour
+public class ToonRampController : MonoBehaviour
 {
     [SerializeField]
     private Color m_AmbientColor = Color.black;
@@ -20,8 +20,8 @@ public class SimpleRampController : MonoBehaviour
     private Color _AmbientColor = Color.black;
 
     [SerializeField]
-    [Range(ToonMainValues.sShadowRangeMin, ToonMainValues.sShadowRangeMax)]
-    private float m_SurfaceShadow = ToonMainValues.sShadowDefault;
+    [Range(ToonDefaultValues.sShadowRangeMin, ToonDefaultValues.sShadowRangeMax)]
+    private float m_SurfaceShadow = ToonDefaultValues.sShadowDefault;
 
     public float SurfaceShadow
     {
@@ -32,11 +32,11 @@ public class SimpleRampController : MonoBehaviour
             Shader.SetGlobalFloat("_SurfaceShadowLimit", _SurfaceShadow);
         }
     }
-    private float _SurfaceShadow = ToonMainValues.sShadowDefault;
+    private float _SurfaceShadow = ToonDefaultValues.sShadowDefault;
 
     [SerializeField]
-    [Range(ToonMainValues.sHighlightRangeMin, ToonMainValues.sHighlightRangeMax)]
-    private float m_SurfaceHighlight = ToonMainValues.sHighlightDefault;
+    [Range(ToonDefaultValues.sHighlightRangeMin, ToonDefaultValues.sHighlightRangeMax)]
+    private float m_SurfaceHighlight = ToonDefaultValues.sHighlightDefault;
 
     public float SurfaceHighlight
     {
@@ -47,11 +47,11 @@ public class SimpleRampController : MonoBehaviour
             Shader.SetGlobalFloat("_SurfaceHighlightLimit", _SurfaceHighlight);
         }
     }
-    private float _SurfaceHighlight = ToonMainValues.sHighlightDefault;
+    private float _SurfaceHighlight = ToonDefaultValues.sHighlightDefault;
 
     [SerializeField]
-    [Range(ToonMainValues.aShadowRangeMin, ToonMainValues.aShadowRangeMax)]
-    private float m_AttenuationShadow = ToonMainValues.aShadowDefault;
+    [Range(ToonDefaultValues.aShadowRangeMin, ToonDefaultValues.aShadowRangeMax)]
+    private float m_AttenuationShadow = ToonDefaultValues.aShadowDefault;
 
     public float AttenuationShadow
     {
@@ -62,11 +62,11 @@ public class SimpleRampController : MonoBehaviour
             Shader.SetGlobalFloat("_AttenuationShadowLimit", _AttenuationShadow);
         }
     }
-    private float _AttenuationShadow = ToonMainValues.aShadowDefault;
+    private float _AttenuationShadow = ToonDefaultValues.aShadowDefault;
 
     [SerializeField]
-    [Range(ToonMainValues.aHighlightRangeMin, ToonMainValues.aHighlightRangeMax)]
-    private float m_AttenuationHighlight = ToonMainValues.aHighlightDefault;
+    [Range(ToonDefaultValues.aHighlightRangeMin, ToonDefaultValues.aHighlightRangeMax)]
+    private float m_AttenuationHighlight = ToonDefaultValues.aHighlightDefault;
 
     public float AttenuationHighlight
     {
@@ -77,11 +77,11 @@ public class SimpleRampController : MonoBehaviour
             Shader.SetGlobalFloat("_AttenuationHighlightLimit", _AttenuationHighlight);
         }
     }
-    private float _AttenuationHighlight = ToonMainValues.aHighlightDefault;
+    private float _AttenuationHighlight = ToonDefaultValues.aHighlightDefault;
 
     [SerializeField]
-    [Range(ToonMainValues.midtoneRangeMin, ToonMainValues.midtoneRangeMax)]
-    private float m_MidtoneValue = ToonMainValues.midtoneDefault;
+    [Range(ToonDefaultValues.midtoneRangeMin, ToonDefaultValues.midtoneRangeMax)]
+    private float m_MidtoneValue = ToonDefaultValues.midtoneDefault;
 
     public float MidtoneValue
     {
@@ -92,11 +92,11 @@ public class SimpleRampController : MonoBehaviour
             Shader.SetGlobalFloat("_MidtoneValue", _MidtoneValue);
         }
     }
-    private float _MidtoneValue = ToonMainValues.midtoneDefault;
+    private float _MidtoneValue = ToonDefaultValues.midtoneDefault;
 
     [SerializeField]
-    [Range(ToonMainValues.edgeRangeMin, ToonMainValues.edgeRangeMax)]
-    private float m_EdgeSoftness = ToonMainValues.edgeDefault;
+    [Range(ToonDefaultValues.edgeRangeMin, ToonDefaultValues.edgeRangeMax)]
+    private float m_EdgeSoftness = ToonDefaultValues.edgeDefault;
 
     public float EdgeSoftness
     {
@@ -107,7 +107,7 @@ public class SimpleRampController : MonoBehaviour
             Shader.SetGlobalFloat("_EdgeSoftness", _EdgeSoftness);
         }
     }
-    private float _EdgeSoftness = ToonMainValues.edgeDefault;    
+    private float _EdgeSoftness = ToonDefaultValues.edgeDefault;    
 
     void Awake()
     {

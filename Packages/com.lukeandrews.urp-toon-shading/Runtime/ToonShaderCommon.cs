@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ToonShader
 {
-    public static class ToonMainValues
+    public static class ToonDefaultValues
     {
         public const float sShadowRangeMin = 0.0f;
         public const float sShadowRangeMax = 0.4f;

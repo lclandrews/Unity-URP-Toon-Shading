@@ -1,7 +1,7 @@
-#ifndef TOON_SIMPLE_INPUT_DATA_INCLUDED
-#define TOON_SIMPLE_INPUT_DATA_INCLUDED
+#ifndef TOON_INPUT_DATA_INCLUDED
+#define TOON_INPUT_DATA_INCLUDED
 
-struct ToonSimpleInputData
+struct ToonInputData
 {
     float3  positionWS;
     half3   normalWS;
@@ -12,9 +12,9 @@ struct ToonSimpleInputData
     half3   cameraDirWS;
 };
 
-inline void InitToonSimpleInputData(Varyings input, half3 normalTS, out ToonSimpleInputData inputData)
+inline void InitToonInputData(Varyings input, half3 normalTS, out ToonInputData inputData)
 {
-    inputData = (ToonSimpleInputData)0;
+    inputData = (ToonInputData)0;
 
     half3 viewDirWS = input.vAndViewDirWS.yzw;
     viewDirWS = SafeNormalize(viewDirWS);

@@ -5,8 +5,8 @@ using UnityEditor.ToonShaderGUI;
 
 using UnityEngine;
 
-[CustomEditor(typeof(SimpleRampController))]
-public class SimpleRampControllerEditor : Editor
+[CustomEditor(typeof(ToonRampController))]
+public class ToomRampControllerEditor : Editor
 {
     SavedString m_globalAmbient;
 
@@ -26,21 +26,21 @@ public class SimpleRampControllerEditor : Editor
 
     void OnEnable()
     {
-        m_globalAmbient = new SavedString(ToonMainValues.uiKeyPrefix + ToonMainValues.ambientHeader, SavedString.GetDefaultColorString());
+        m_globalAmbient = new SavedString(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.ambientHeader, SavedString.GetDefaultColorString());
 
-        m_globalMainShadow = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.sufaceShadowHeader, ToonMainValues.sShadowDefault);
-        m_globalMainHighlight = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.sufaceHighlightHeader, ToonMainValues.sHighlightDefault);
+        m_globalMainShadow = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.sufaceShadowHeader, ToonDefaultValues.sShadowDefault);
+        m_globalMainHighlight = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.sufaceHighlightHeader, ToonDefaultValues.sHighlightDefault);
 
-        m_globalAddShadow = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.attenuationShadowHeader, ToonMainValues.aShadowDefault);
-        m_globalAddHighlight = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.attenuationHighlightHeader, ToonMainValues.aHighlightDefault);
+        m_globalAddShadow = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.attenuationShadowHeader, ToonDefaultValues.aShadowDefault);
+        m_globalAddHighlight = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.attenuationHighlightHeader, ToonDefaultValues.aHighlightDefault);
 
-        m_globalMidtone = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.midToneHeader, ToonMainValues.midtoneDefault);
-        m_globalEdge = new SavedFloat(ToonMainValues.uiKeyPrefix + ToonMainValues.edgeSoftnessHeader, ToonMainValues.edgeDefault);
+        m_globalMidtone = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.midToneHeader, ToonDefaultValues.midtoneDefault);
+        m_globalEdge = new SavedFloat(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.edgeSoftnessHeader, ToonDefaultValues.edgeDefault);
     }
 
     public override void OnInspectorGUI()
     {
-        SimpleRampController targetController = (SimpleRampController)target;
+        ToonRampController targetController = (ToonRampController)target;
 
         DrawDefaultInspector();
 

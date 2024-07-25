@@ -21,7 +21,7 @@ public class AmbientLightAnimationController : MonoBehaviour
 
     void Start()
     {
-        _AmbientColor = ToonMainValues.GetToonAmbientLight();
+        _AmbientColor = ToonDefaultValues.GetToonAmbientLight();
     }
 
     private void Update()
