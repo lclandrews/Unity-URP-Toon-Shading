@@ -1,0 +1,20 @@
+{
+    "name": "URPToonShading.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e94e62138ba1bbb46bd35f206f5b53e6",
+        "GUID:c579267770062bf448e75eb160330b7f",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

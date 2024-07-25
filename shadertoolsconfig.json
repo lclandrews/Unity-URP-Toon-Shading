@@ -1,0 +1,11 @@
+﻿{
+    "hlsl.preprocessorDefinitions":{},
+    "hlsl.additionalIncludeDirectories":
+    [
+        ".",
+        "D:\\Desktop\\UnityPackages",
+        "D:\\Desktop\\Repos\\Unity-URP-Toon-Shading\\Packages\\com.lukeandrews.urp-toon-shading",
+        "C:\\Program Files\\Unity\\Hub\\Editor\\2022.3.39f1\\Editor\\Data\\CGIncludes",
+        "ShaderIncludes"        
+    ]
+}
