@@ -18,6 +18,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
         SavedBool m_advancedLightingFoldout;
         SavedBool m_SurfaceOptionsFoldout;
         SavedBool m_SurfaceInputsFoldout;
+        SavedBool m_OutlineFoldout;
         SavedBool m_AdvancedFoldout;
 
         SavedString m_globalAmbient;
@@ -38,7 +39,6 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
         // collect properties from the material properties
         public override void FindProperties(MaterialProperty[] properties)
         {            
-            cullingProp = FindProperty("_Cull", properties);
             cullingProp = FindProperty("_Cull", properties);
             alphaClipProp = FindProperty("_AlphaClip", properties);
             alphaCutoffProp = FindProperty("_Cutoff", properties);
@@ -78,6 +78,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             m_advancedLightingFoldout = new SavedBool($"{m_HeaderStateKey}.AdvancedLightingFoldout", true);
             m_SurfaceOptionsFoldout = new SavedBool($"{m_HeaderStateKey}.SurfaceOptionsFoldout", true);
             m_SurfaceInputsFoldout = new SavedBool($"{m_HeaderStateKey}.SurfaceInputsFoldout", true);
+            m_OutlineFoldout = new SavedBool($"{m_HeaderStateKey}.OutlineFoldout", false);
             m_AdvancedFoldout = new SavedBool($"{m_HeaderStateKey}.AdvancedFoldout", false);
 
             m_globalAmbient = new SavedString(ToonDefaultValues.uiKeyPrefix + ToonDefaultValues.ambientHeader, SavedString.GetDefaultColorString());
@@ -125,13 +126,21 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
 
+            m_OutlineFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_OutlineFoldout.value, ToonMainGUI.Styles.OutlineSettingsText);
+            if (m_OutlineFoldout.value)
+            {
+                DrawOutlineArea(toonStandardProperties, materialEditor, material);
+                EditorGUILayout.Space();
+            }
+            EditorGUILayout.EndFoldoutHeaderGroup();
+
             m_advancedLightingFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_advancedLightingFoldout.value, ToonMainGUI.Styles.AdvLighting);
             if (m_advancedLightingFoldout.value)
             {
                 DrawLightingOptions();
                 EditorGUILayout.Space();
             }
-            EditorGUILayout.EndFoldoutHeaderGroup();
+            EditorGUILayout.EndFoldoutHeaderGroup();            
 
             m_AdvancedFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(m_AdvancedFoldout.value, Styles.AdvancedLabel);
             if (m_AdvancedFoldout.value)
@@ -140,8 +149,6 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
                 EditorGUILayout.Space();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
-
-            //DrawAdditionalFoldouts(material);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -156,7 +163,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             if (material == null)
                 throw new ArgumentNullException("material");
 
-            ToonGUI.SetMaterialKeywords(material);
+            ToonGUI.SetMaterialKeywordsAndPasses(material);
         }
 
         // material main surface options
@@ -199,10 +206,10 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             base.DrawSurfaceInputs(material);
             DrawMaskMapArea(toonStandardProperties, materialEditor, material);
             DrawSpecularArea(toonStandardProperties, materialEditor, material);
-            DrawNormalArea(materialEditor, toonStandardProperties.bumpMapProp, toonStandardProperties.bumpScaleProp);
+            DrawNormalArea(materialEditor, toonStandardProperties.BumpMapProp, toonStandardProperties.BumpScaleProp);
             DrawBacklightArea(toonStandardProperties, materialEditor, material);
             DrawEdgeShineArea(toonStandardProperties, materialEditor, material);
-            DrawOcclusionArea(materialEditor, toonStandardProperties.maskMap, toonStandardProperties.occlusionStrength);
+            DrawOcclusionArea(materialEditor, toonStandardProperties.MaskMap, toonStandardProperties.OcclusionStrength);
             DrawEmissionProperties(material, true);
             DrawTileOffset(materialEditor, baseMapProp);
         }
@@ -217,7 +224,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
         {
             Color ambientColor = Shader.GetGlobalColor("_AmbientColor");
             EditorGUI.BeginChangeCheck();
-            ambientColor = ToonMainGUI.DrawColorField(ambientColor, ToonMainGUI.Styles.ambientColorText, true, false, false);            
+            ambientColor = ToonMainGUI.DrawColorField(ambientColor, ToonMainGUI.Styles.AmbientColorText, true, false, false);            
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -225,14 +232,14 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
                 m_globalAmbient.SetValueAsColor(ambientColor);
             }
 
-            EditorGUILayout.LabelField(ToonMainGUI.Styles.mainLightingText);
+            EditorGUILayout.LabelField(ToonMainGUI.Styles.MainLightingText);
 
             EditorGUI.indentLevel += 2;
 
             EditorGUI.BeginChangeCheck();
             float mShadow = Shader.GetGlobalFloat("_SurfaceShadowLimit");
             mShadow = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.mainShadowText, mShadow, ToonDefaultValues.sShadowRangeMin, ToonDefaultValues.sShadowRangeMax);
+                ToonMainGUI.Styles.MainShadowText, mShadow, ToonDefaultValues.sShadowRangeMin, ToonDefaultValues.sShadowRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_SurfaceShadowLimit", mShadow);
@@ -242,7 +249,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float mHighlight = Shader.GetGlobalFloat("_SurfaceHighlightLimit");
             mHighlight = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.mainLightEdgeText, mHighlight, ToonDefaultValues.sHighlightRangeMin, ToonDefaultValues.sHighlightRangeMax);
+                ToonMainGUI.Styles.MainLightEdgeText, mHighlight, ToonDefaultValues.sHighlightRangeMin, ToonDefaultValues.sHighlightRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_SurfaceHighlightLimit", mHighlight);
@@ -251,14 +258,14 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
 
             EditorGUI.indentLevel -= 2;
 
-            EditorGUILayout.LabelField(ToonMainGUI.Styles.additionalLightingText);
+            EditorGUILayout.LabelField(ToonMainGUI.Styles.AdditionalLightingText);
 
             EditorGUI.indentLevel += 2;
 
             EditorGUI.BeginChangeCheck();
             float aShadow = Shader.GetGlobalFloat("_AttenuationShadowLimit");
             aShadow = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.addShadowText, aShadow, ToonDefaultValues.aShadowRangeMin, ToonDefaultValues.aShadowRangeMax);
+                ToonMainGUI.Styles.AddShadowText, aShadow, ToonDefaultValues.aShadowRangeMin, ToonDefaultValues.aShadowRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_AttenuationShadowLimit", aShadow);
@@ -268,7 +275,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float aHighlight = Shader.GetGlobalFloat("_AttenuationHighlightLimit");
             aHighlight = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.addLightEdgeText, aHighlight, ToonDefaultValues.aHighlightRangeMin, ToonDefaultValues.aHighlightRangeMax);
+                ToonMainGUI.Styles.AddLightEdgeText, aHighlight, ToonDefaultValues.aHighlightRangeMin, ToonDefaultValues.aHighlightRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_AttenuationHighlightLimit", aHighlight);
@@ -280,7 +287,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float midtone = Shader.GetGlobalFloat("_MidtoneValue");
             midtone = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.midToneText, midtone, ToonDefaultValues.midtoneRangeMin, ToonDefaultValues.midtoneRangeMax);
+                ToonMainGUI.Styles.MidToneText, midtone, ToonDefaultValues.midtoneRangeMin, ToonDefaultValues.midtoneRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_MidtoneValue", midtone);
@@ -290,7 +297,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             EditorGUI.BeginChangeCheck();
             float edge = Shader.GetGlobalFloat("_EdgeSoftness");
             edge = EditorGUILayout.Slider(
-                ToonMainGUI.Styles.edgeSoftnessText, edge, ToonDefaultValues.edgeRangeMin, ToonDefaultValues.edgeRangeMax);
+                ToonMainGUI.Styles.EdgeSoftnessText, edge, ToonDefaultValues.edgeRangeMin, ToonDefaultValues.edgeRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat("_EdgeSoftness", edge);
@@ -316,22 +323,22 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             if (backlightEnabled)
             {
                 EditorGUI.BeginChangeCheck();
-                materialEditor.ShaderProperty(toonStandardProperties.backlight, ToonMainGUI.Styles.backlightText);
+                materialEditor.ShaderProperty(toonStandardProperties.Backlight, ToonMainGUI.Styles.BacklightText);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ValidateMaterial(material);
                 }
 
-                EditorGUI.BeginDisabledGroup(properties.backlight.floatValue == 0.0f);
+                EditorGUI.BeginDisabledGroup(properties.Backlight.floatValue == 0.0f);
                 {
                     EditorGUI.indentLevel += 2;
                     EditorGUI.BeginChangeCheck();
                     float backlightStrength = EditorGUILayout.Slider(
-                        ToonMainGUI.Styles.backlightStrengthText, properties.backlightStrength.floatValue,
-                        properties.backlightStrength.rangeLimits.x, properties.backlightStrength.rangeLimits.y);
+                        ToonMainGUI.Styles.BacklightStrengthText, properties.BacklightStrength.floatValue,
+                        properties.BacklightStrength.rangeLimits.x, properties.BacklightStrength.rangeLimits.y);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        properties.backlightStrength.floatValue = backlightStrength;
+                        properties.BacklightStrength.floatValue = backlightStrength;
                     }
                     EditorGUI.indentLevel -= 2;
                 }
@@ -346,21 +353,21 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             if (edgeShineEnabled)
             {
                 EditorGUI.BeginChangeCheck();
-                materialEditor.ShaderProperty(properties.edgeShine, ToonMainGUI.Styles.edgeShineText);
+                materialEditor.ShaderProperty(properties.EdgeShine, ToonMainGUI.Styles.EdgeShineText);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ValidateMaterial(material);
                 }
 
-                EditorGUI.BeginDisabledGroup(properties.edgeShine.floatValue == 0.0f);
+                EditorGUI.BeginDisabledGroup(properties.EdgeShine.floatValue == 0.0f);
                 {
-                    Color edgeColor = properties.edgeShineColor.colorValue;
+                    Color edgeColor = properties.EdgeShineColor.colorValue;
                     EditorGUI.indentLevel += 2;
                     EditorGUI.BeginChangeCheck();
-                    edgeColor = ToonMainGUI.DrawColorField(edgeColor, ToonMainGUI.Styles.edgeShineColorText, true, false, false);
+                    edgeColor = ToonMainGUI.DrawColorField(edgeColor, ToonMainGUI.Styles.EdgeShineColorText, true, false, false);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        properties.edgeShineColor.colorValue = edgeColor;
+                        properties.EdgeShineColor.colorValue = edgeColor;
                     }
                     EditorGUI.indentLevel -= 2;
                 }
@@ -375,7 +382,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
                 EditorGUI.BeginChangeCheck();
                 EditorGUI.showMixedValue = occlusionStrength.hasMixedValue;
                 float oS = EditorGUILayout.Slider(
-                    ToonMainGUI.Styles.occlusionStrengthText, occlusionStrength.floatValue, occlusionStrength.rangeLimits.x, occlusionStrength.rangeLimits.y);
+                    ToonMainGUI.Styles.OcclusionStrengthText, occlusionStrength.floatValue, occlusionStrength.rangeLimits.x, occlusionStrength.rangeLimits.y);
                 if (EditorGUI.EndChangeCheck())
                 {
                     occlusionStrength.floatValue = oS;
@@ -386,33 +393,33 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
 
         public void DrawMaskMapArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
         {
-            if (properties.maskMap != null)
+            if (properties.MaskMap != null)
             {
-                materialEditor.TexturePropertySingleLine(ToonMainGUI.Styles.maskMapText, properties.maskMap);
+                materialEditor.TexturePropertySingleLine(ToonMainGUI.Styles.MaskMapText, properties.MaskMap);
 
-                if(properties.maskMap.textureValue != null)
+                if(properties.MaskMap.textureValue != null)
                 {
                     EditorGUI.indentLevel += 2;
                     EditorGUI.BeginChangeCheck();
-                    materialEditor.ShaderProperty(properties.fillSpecular, ToonMainGUI.Styles.maskFillSpecular);
+                    materialEditor.ShaderProperty(properties.FillSpecular, ToonMainGUI.Styles.MaskFillSpecular);
                     if (EditorGUI.EndChangeCheck())
                     {
                         ValidateMaterial(material);
                     }
                     EditorGUI.BeginChangeCheck();
-                    materialEditor.ShaderProperty(properties.fillOcclusion, ToonMainGUI.Styles.maskFillOcclusion);
+                    materialEditor.ShaderProperty(properties.FillOcclusion, ToonMainGUI.Styles.MaskFillOcclusion);
                     if (EditorGUI.EndChangeCheck())
                     {
                         ValidateMaterial(material);
                     }
                     EditorGUI.BeginChangeCheck();
-                    materialEditor.ShaderProperty(properties.fillEmission, ToonMainGUI.Styles.maskFillEmission);
+                    materialEditor.ShaderProperty(properties.FillEmission, ToonMainGUI.Styles.MaskFillEmission);
                     if (EditorGUI.EndChangeCheck())
                     {
                         ValidateMaterial(material);
                     }
                     EditorGUI.BeginChangeCheck();
-                    materialEditor.ShaderProperty(properties.fillSmoothness, ToonMainGUI.Styles.maskFillSmoothness);
+                    materialEditor.ShaderProperty(properties.FillSmoothness, ToonMainGUI.Styles.MaskFillSmoothness);
                     if (EditorGUI.EndChangeCheck())
                     {
                         ValidateMaterial(material);
@@ -425,31 +432,31 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
         public void DrawSpecularArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
         {
             EditorGUI.BeginChangeCheck();
-            materialEditor.ShaderProperty(properties.specular, ToonMainGUI.Styles.highlightsText);
+            materialEditor.ShaderProperty(properties.Specular, ToonMainGUI.Styles.HighlightsText);
             if (EditorGUI.EndChangeCheck())
             {
                 ValidateMaterial(material);
             }
 
-            EditorGUI.BeginDisabledGroup(properties.specular.floatValue == 0.0f);
+            EditorGUI.BeginDisabledGroup(properties.Specular.floatValue == 0.0f);
             {
                 EditorGUI.BeginChangeCheck();
-                Color specColor = ToonMainGUI.DrawColorField(properties.specColor.colorValue, ToonMainGUI.Styles.specColorText, true, false, false);
+                Color specColor = ToonMainGUI.DrawColorField(properties.SpecColor.colorValue, ToonMainGUI.Styles.SpecColorText, true, false, false);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    properties.specColor.colorValue = specColor;
+                    properties.SpecColor.colorValue = specColor;
                 }                
 
                 DrawSpecularTextureArea(properties, materialEditor, material);
 
                 EditorGUI.indentLevel += 2;
                 EditorGUI.BeginChangeCheck();
-                EditorGUI.showMixedValue = properties.smoothness.hasMixedValue;
+                EditorGUI.showMixedValue = properties.Smoothness.hasMixedValue;
                 float smoothness = EditorGUILayout.Slider(
-                    ToonMainGUI.Styles.smoothnessText, properties.smoothness.floatValue, properties.smoothness.rangeLimits.x, properties.smoothness.rangeLimits.y);
+                    ToonMainGUI.Styles.SmoothnessText, properties.Smoothness.floatValue, properties.Smoothness.rangeLimits.x, properties.Smoothness.rangeLimits.y);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    properties.smoothness.floatValue = smoothness;
+                    properties.Smoothness.floatValue = smoothness;
                 }
                 EditorGUI.showMixedValue = false;
                 EditorGUI.indentLevel -= 2;
@@ -460,31 +467,31 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
         public void DrawSpecularTextureArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
         {
             //EditorGUI.BeginDisabledGroup(toonStandardProperties.specular.floatValue == 0.0f);
-            if (toonStandardProperties.specular.floatValue == 1.0f)
+            if (toonStandardProperties.Specular.floatValue == 1.0f)
             {
                 EditorGUI.indentLevel += 2;
-                materialEditor.TexturePropertySingleLine(ToonMainGUI.Styles.specTex, properties.specTexMap);
+                materialEditor.TexturePropertySingleLine(ToonMainGUI.Styles.SpecTex, properties.SpecTexMap);
                 EditorGUI.indentLevel -= 2;
 
-                if (properties.specTexMap.textureValue != null)
+                if (properties.SpecTexMap.textureValue != null)
                 {
                     EditorGUI.indentLevel += 4;
                     EditorGUI.BeginChangeCheck();
-                    EditorGUI.showMixedValue = properties.specTexTile.hasMixedValue;
+                    EditorGUI.showMixedValue = properties.SpecTexTile.hasMixedValue;
                     float specTexTile = EditorGUILayout.Slider(
-                        ToonMainGUI.Styles.specTexTile, properties.specTexTile.floatValue, properties.specTexTile.rangeLimits.x, properties.specTexTile.rangeLimits.y);
+                        ToonMainGUI.Styles.SpecTexTile, properties.SpecTexTile.floatValue, properties.SpecTexTile.rangeLimits.x, properties.SpecTexTile.rangeLimits.y);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        properties.specTexTile.floatValue = specTexTile;
+                        properties.SpecTexTile.floatValue = specTexTile;
                     }
 
                     EditorGUI.BeginChangeCheck();
-                    EditorGUI.showMixedValue = properties.specTexRot.hasMixedValue;
+                    EditorGUI.showMixedValue = properties.SpecTexRot.hasMixedValue;
                     float specTexRot = EditorGUILayout.Slider(
-                        ToonMainGUI.Styles.specTexRot, properties.specTexRot.floatValue, properties.specTexRot.rangeLimits.x, properties.specTexRot.rangeLimits.y);
+                        ToonMainGUI.Styles.SpecTexRot, properties.SpecTexRot.floatValue, properties.SpecTexRot.rangeLimits.x, properties.SpecTexRot.rangeLimits.y);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        properties.specTexRot.floatValue = specTexRot;
+                        properties.SpecTexRot.floatValue = specTexRot;
                     }
 
                     EditorGUI.showMixedValue = false;
@@ -501,7 +508,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             if (!keyword)
             {
                 EditorGUI.BeginChangeCheck();
-                Color emColor = ToonMainGUI.DrawColorField(emissionColorProp.colorValue, ToonMainGUI.Styles.emissionColorText, true, false, true);
+                Color emColor = ToonMainGUI.DrawColorField(emissionColorProp.colorValue, ToonMainGUI.Styles.EmissionColorText, true, false, true);
                 if (EditorGUI.EndChangeCheck())
                 {
                     emissionColorProp.colorValue = emColor;
@@ -515,7 +522,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
                 EditorGUI.BeginDisabledGroup(!emissive);
                 {
                     EditorGUI.BeginChangeCheck();
-                    Color emColor = ToonMainGUI.DrawColorField(emissionColorProp.colorValue, ToonMainGUI.Styles.emissionColorText, true, false, true);
+                    Color emColor = ToonMainGUI.DrawColorField(emissionColorProp.colorValue, ToonMainGUI.Styles.EmissionColorText, true, false, true);
                     if (EditorGUI.EndChangeCheck())
                     {
                         emissionColorProp.colorValue = emColor;
@@ -532,6 +539,79 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
                 if (brightness <= 0f)
                     material.globalIlluminationFlags |= MaterialGlobalIlluminationFlags.EmissiveIsBlack;
             }
+        }
+
+        public void DrawOutlineArea(ToonGUI.ToonSimpleProperties properties, MaterialEditor materialEditor, Material material)
+        {
+            EditorGUI.BeginChangeCheck();
+            materialEditor.ShaderProperty(properties.Outline, ToonMainGUI.Styles.OutlineText);
+            if (EditorGUI.EndChangeCheck())
+            {
+                ValidateMaterial(material);
+            }
+
+            EditorGUI.BeginDisabledGroup(properties.Outline.floatValue == 0.0f);
+            {                
+                EditorGUI.BeginChangeCheck();
+                EditorGUI.showMixedValue = properties.OutlineWidth.hasMixedValue;
+                float width = EditorGUILayout.Slider(
+                    ToonMainGUI.Styles.OutlineWidthText, properties.OutlineWidth.floatValue, properties.OutlineWidth.rangeLimits.x, properties.OutlineWidth.rangeLimits.y);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    properties.OutlineWidth.floatValue = width;
+                }
+
+                EditorGUI.indentLevel += 2;
+                materialEditor.TexturePropertySingleLine(ToonMainGUI.Styles.OutlineWidthMapText, properties.OutlineWidthMap);
+                EditorGUI.indentLevel -= 2;
+
+                Color outlineColor = ToonMainGUI.DrawColorField(properties.OutlineColor.colorValue, ToonMainGUI.Styles.OutlineColorText, true, false, false);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    properties.OutlineColor.colorValue = outlineColor;
+                }
+
+                EditorGUI.BeginChangeCheck();
+                materialEditor.ShaderProperty(properties.OutlineFade, ToonMainGUI.Styles.OutlineFadeText);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    ValidateMaterial(material);
+                }
+
+                if(properties.OutlineFade.floatValue == 0.0F)
+                {
+                    EditorGUI.BeginChangeCheck();
+                    float cullingDistance = EditorGUILayout.FloatField(ToonMainGUI.Styles.OutlineCullText, properties.OutlineEndFadeDistance.floatValue);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        properties.OutlineEndFadeDistance.floatValue = cullingDistance;
+                    }
+                }
+                else
+                {
+                    EditorGUI.BeginChangeCheck();
+                    float startFadeDistance = EditorGUILayout.FloatField(ToonMainGUI.Styles.OutlineFadeStartText, properties.OutlineStartFadeDistance.floatValue);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        properties.OutlineStartFadeDistance.floatValue = startFadeDistance;
+                    }
+
+                    EditorGUI.BeginChangeCheck();
+                    float endFadeDistance = EditorGUILayout.FloatField(ToonMainGUI.Styles.OutlineFadeEndText, properties.OutlineEndFadeDistance.floatValue);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        properties.OutlineEndFadeDistance.floatValue = endFadeDistance;
+                    }
+                }
+
+                EditorGUI.BeginChangeCheck();
+                float zOffset = EditorGUILayout.FloatField(ToonMainGUI.Styles.OutlineOffsetZ, properties.OutlineOffsetZ.floatValue);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    properties.OutlineOffsetZ.floatValue = zOffset;
+                }                
+            }
+            EditorGUI.EndDisabledGroup();
         }
 
         public override void AssignNewShaderToMaterial(Material material, Shader oldShader, Shader newShader)

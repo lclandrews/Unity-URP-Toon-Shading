@@ -30,6 +30,14 @@ half _SpecTexTile;
 half _SpecTexRot;
 half _BumpScale;
 half _OcclusionStrength;
+
+// OUTLINE 
+half _OutlineWidth;
+half _OutlineStartFadeDistance;
+half _OutlineEndFadeDistance;
+float4 _OutlineMap_ST;
+half4 _OutlineColor;
+half _OutlineOffsetZ;
 CBUFFER_END
 
 TEXTURE2D(_BaseMap);            SAMPLER(sampler_BaseMap);
@@ -37,6 +45,8 @@ TEXTURE2D(_BaseMap);            SAMPLER(sampler_BaseMap);
 TEXTURE2D(_ToonMask);           SAMPLER(sampler_ToonMask);
 TEXTURE2D(_SpecTexMap);         SAMPLER(sampler_SpecTexMap);
 TEXTURE2D(_BumpMap);            SAMPLER(sampler_BumpMap);
+
+TEXTURE2D(_OutlineMap);            SAMPLER(sampler_OutlineMap);
 
 #include "ToonSurfaceInput.hlsl"
 

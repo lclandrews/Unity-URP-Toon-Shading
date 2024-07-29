@@ -10,101 +10,130 @@ namespace UnityEditor.ToonShaderGUI
     {
         public static class Styles
         {
-            public static GUIContent mainLightingText = new GUIContent("Surface Shading",
+            public static GUIContent MainLightingText = new GUIContent("Surface Shading",
                 "The ramp properties of a surfaces shading.");
 
-            public static GUIContent additionalLightingText = new GUIContent("Light Attenuation",
+            public static GUIContent AdditionalLightingText = new GUIContent("Light Attenuation",
                 "The ramp properties of light attenuation.");
 
-            public static GUIContent mainShadowText = new GUIContent("Shadow Limit",
+            public static GUIContent MainShadowText = new GUIContent("Shadow Limit",
                 "Used to control the shadow limit of a surfaces shading.");
 
-            public static GUIContent mainLightEdgeText = new GUIContent("Highlight Limit",
+            public static GUIContent MainLightEdgeText = new GUIContent("Highlight Limit",
                 "Used to control the highlight limit of a surfaces shading.");
 
-            public static GUIContent addShadowText = new GUIContent("Shadow Limit",
+            public static GUIContent AddShadowText = new GUIContent("Shadow Limit",
                 "Used to control the shadow limit of light attenuation.");
 
-            public static GUIContent addLightEdgeText = new GUIContent("Highlight Limit",
+            public static GUIContent AddLightEdgeText = new GUIContent("Highlight Limit",
                 "Used to control the highlight limit of light attenuation.");
 
-            public static GUIContent edgeSoftnessText = new GUIContent("Edge Softness",
+            public static GUIContent EdgeSoftnessText = new GUIContent("Edge Softness",
                 "Used to control the edge between lighting bands.");
 
-            public static GUIContent midToneText = new GUIContent("Mid Tone Value",
+            public static GUIContent MidToneText = new GUIContent("Mid Tone Value",
                 "Controls the value of the mid tones.");
 
-            public static GUIContent maskMapText = new GUIContent("Mask Map",
+            public static GUIContent MaskMapText = new GUIContent("Mask Map",
                 "Map that stores: Specular (R), Occlusion (G), Emission (B), Smoothness (A).");
 
-            public static GUIContent maskFillSpecular = new GUIContent("Fill Specular",
+            public static GUIContent MaskFillSpecular = new GUIContent("Fill Specular",
                 "Ignore the (R) channel of the mask map.");
 
-            public static GUIContent maskFillOcclusion = new GUIContent("Fill Occlusion",
+            public static GUIContent MaskFillOcclusion = new GUIContent("Fill Occlusion",
                 "Ignore the (G) channel of the mask map.");
 
-            public static GUIContent maskFillEmission = new GUIContent("Fill Emission",
+            public static GUIContent MaskFillEmission = new GUIContent("Fill Emission",
                 "Ignore the (B) channel of the mask map.");
 
-            public static GUIContent maskFillSmoothness = new GUIContent("Fill Smoothness",
+            public static GUIContent MaskFillSmoothness = new GUIContent("Fill Smoothness",
                 "Ignore the (A) channel of the mask map.");
 
-            public static GUIContent ambientColorText = new GUIContent("Ambient Light Color",
+            public static GUIContent AmbientColorText = new GUIContent("Ambient Light Color",
                 "Property that sets the ambient light color for all toon shaded objects in the scene.");
 
-            public static GUIContent mainGradText = new GUIContent("Main Light Ramp",
+            public static GUIContent MainGradText = new GUIContent("Main Light Ramp",
                 "Ramp texture that controls the shading bands of the main light.");
 
-            public static GUIContent addGradText = new GUIContent("Additional Light Ramp",
+            public static GUIContent AddGradText = new GUIContent("Additional Light Ramp",
                 "Ramp texture that controls the shading bands of additional lights.");
 
-            public static GUIContent specularMapText = new GUIContent("Specular Map", 
+            public static GUIContent SpecularMapText = new GUIContent("Specular Map", 
                 "Sets and configures the map and color for the Specular lighting.");
 
-            public static GUIContent smoothnessText = new GUIContent("Smoothness",
+            public static GUIContent SmoothnessText = new GUIContent("Smoothness",
                 "Controls the spread of highlights and reflections on the surface.");
 
-            public static GUIContent highlightsText = new GUIContent("Specular",
+            public static GUIContent HighlightsText = new GUIContent("Specular",
                 "When enabled, the Material reflects the shine from direct lighting.");
 
-            public static GUIContent specColorText = new GUIContent("Specular Color",
+            public static GUIContent SpecColorText = new GUIContent("Specular Color",
                 "Controls the specular tint of highlights.");
 
-            public static GUIContent emissionColorText = new GUIContent("Emission Color",
+            public static GUIContent EmissionColorText = new GUIContent("Emission Color",
                 "Controls the tint of emissive colors.");
 
-            public static GUIContent specTex = new GUIContent("Specular Texture",
+            public static GUIContent SpecTex = new GUIContent("Specular Texture",
                 "Map used to add texture to specular highlights.");
 
-            public static GUIContent specTexTile = new GUIContent("Tiling",
+            public static GUIContent SpecTexTile = new GUIContent("Tiling",
                 "Used to uv scale and rotation of the specular texture map.");
 
-            public static GUIContent specTexRot = new GUIContent("Rotation",
+            public static GUIContent SpecTexRot = new GUIContent("Rotation",
                 "Used to uv scale and rotation of the specular texture map.");
 
-            public static GUIContent edgeShineText = new GUIContent("Edge Shine",
+            public static GUIContent EdgeShineText = new GUIContent("Edge Shine",
                 "Enables edge shine.");
 
-            public static GUIContent edgeShineColorText = new GUIContent("Edge Shine Color",
+            public static GUIContent EdgeShineColorText = new GUIContent("Edge Shine Color",
                 "Edge shine color.");
 
-            public static GUIContent backlightText = new GUIContent("Back Lighting",
+            public static GUIContent BacklightText = new GUIContent("Back Lighting",
                 "Enables back lighting.");
 
-            public static GUIContent backlightStrengthText = new GUIContent("Strength",
+            public static GUIContent BacklightStrengthText = new GUIContent("Strength",
                 "Back lighting strength.");
 
-            public static GUIContent occlusionText = new GUIContent("Occlusion Map",
+            public static GUIContent OcclusionText = new GUIContent("Occlusion Map",
                 "Sets an occlusion map to simulate shadowing from ambient lighting.");
 
-            public static GUIContent occlusionStrengthText = new GUIContent("Occlusion Strength",
+            public static GUIContent OcclusionStrengthText = new GUIContent("Occlusion Strength",
                 "Sets the strength of the occlusion map.");
 
             public static readonly GUIContent AdvLighting = new GUIContent("Lighting",
                 "These settings describe the way light interacts with the surface.");
-        }
 
-        public const int queueOffsetRange = 50;
+            public static readonly GUIContent OutlineText = new GUIContent("Enable",
+                "Enables outline.");
+
+            public static readonly GUIContent OutlineSettingsText = new GUIContent("Outline",
+                "All outline settings.");
+
+            public static readonly GUIContent OutlineWidthText = new GUIContent("Width",
+                "Controls with width of the mesh outline.");
+
+            public static readonly GUIContent OutlineWidthMapText = new GUIContent("Width Map",
+                "An additional map used to variably control the width of the outline.");
+
+            public static readonly GUIContent OutlineColorText = new GUIContent("Color",
+                "Color applied to the outline.");
+
+            public static readonly GUIContent OutlineFadeText = new GUIContent("Fade",
+                "Whether to smoothly fade out the outline when culled.");
+
+            public static readonly GUIContent OutlineFadeStartText = new GUIContent("Fade Start",
+                "The distance at which the outline should begin to fade out.");
+
+            public static readonly GUIContent OutlineFadeEndText = new GUIContent("Fade End",
+                "The distance at which the outline should have faded out completely.");
+
+            public static readonly GUIContent OutlineCullText = new GUIContent("Cull Distance",
+                "The distance at which the outline should be culled.");
+
+            public static readonly GUIContent OutlineOffsetZ = new GUIContent("Depth Offset",
+                "Offsets the outline in the depth (Z) direction of the camera.");
+        }
+        public const int QueueOffsetRange = 50;
 
         public static Gradient ShaderValuesToGradient(int type, int length, Vector4[] keys)
         {
@@ -180,32 +209,32 @@ namespace UnityEditor.ToonShaderGUI
         public delegate void SetParameter(string key, T value);
         public delegate T GetParameter(string key, T defaultValue);
 
-        readonly string m_Key;
-        bool m_Loaded;
-        T m_Value;
+        private readonly string _key;
+        private bool _loaded;
+        private T _value;
 
-        readonly SetParameter m_Setter;
-        readonly GetParameter m_Getter;
+        private readonly SetParameter _setter;
+        private readonly GetParameter _getter;
 
         public SavedParameter(string key, T value, GetParameter getter, SetParameter setter)
         {
             Assert.IsNotNull(setter);
             Assert.IsNotNull(getter);
 
-            m_Key = key;
-            m_Loaded = false;
-            m_Value = value;
-            m_Setter = setter;
-            m_Getter = getter;
+            _key = key;
+            _loaded = false;
+            _value = value;
+            _setter = setter;
+            _getter = getter;
         }
 
         void Load()
         {
-            if (m_Loaded)
+            if (_loaded)
                 return;
 
-            m_Loaded = true;
-            m_Value = m_Getter(m_Key, m_Value);
+            _loaded = true;
+            _value = _getter(_key, _value);
         }
 
         public T value
@@ -213,17 +242,17 @@ namespace UnityEditor.ToonShaderGUI
             get
             {
                 Load();
-                return m_Value;
+                return _value;
             }
             set
             {
                 Load();
 
-                if (m_Value.Equals(value))
+                if (_value.Equals(value))
                     return;
 
-                m_Value = value;
-                m_Setter(m_Key, value);
+                _value = value;
+                _setter(_key, value);
             }
         }
     }
@@ -265,14 +294,14 @@ namespace UnityEditor.ToonShaderGUI
         public void SetValueAsColor(Color color)
         {
             ColorJSON c = new ColorJSON();
-            c.color = color;
+            c.Color = color;
             value = JsonUtility.ToJson(c);
         }
 
         public Color GetValueAsColor()
         {
             ColorJSON c = JsonUtility.FromJson<ColorJSON>(value);
-            return c.color;
+            return c.Color;
         }
 
         public static string GetDefaultGradientString()
@@ -285,7 +314,7 @@ namespace UnityEditor.ToonShaderGUI
         public static string GetDefaultColorString()
         {
             ColorJSON c = new ColorJSON();
-            c.color = Color.black;
+            c.Color = Color.black;
             return JsonUtility.ToJson(c);
         }
 
@@ -296,28 +325,28 @@ namespace UnityEditor.ToonShaderGUI
     [Serializable]
     public class GradientJSON
     {
-        public GradientMode mode = GradientMode.Blend;
-        public List<Vector4> colorKeys = new List<Vector4>();
-        public List<Vector2> alphaKeys = new List<Vector2>();
+        public GradientMode Mode = GradientMode.Blend;
+        public List<Vector4> ColorKeys = new List<Vector4>();
+        public List<Vector2> AlphaKeys = new List<Vector2>();
 
         public void FromGradient(Gradient gradient)
         {
             if(gradient != null)
             {
-                colorKeys.Clear();
-                alphaKeys.Clear();
-                mode = gradient.mode;
+                ColorKeys.Clear();
+                AlphaKeys.Clear();
+                Mode = gradient.mode;
                 for(int i = 0; i < gradient.colorKeys.Length; i++)
                 {
                     Color c = gradient.colorKeys[i].color;
                     float t = gradient.colorKeys[i].time;
-                    colorKeys.Add(new Vector4(c.r, c.g, c.b, t));
+                    ColorKeys.Add(new Vector4(c.r, c.g, c.b, t));
                 }
                 for (int i = 0; i < gradient.alphaKeys.Length; i++)
                 {
                     float a = gradient.alphaKeys[i].alpha;
                     float t = gradient.colorKeys[i].time;
-                    alphaKeys.Add(new Vector4(a, t));
+                    AlphaKeys.Add(new Vector4(a, t));
                 }
             }
         }
@@ -325,18 +354,18 @@ namespace UnityEditor.ToonShaderGUI
         public Gradient ToGradient()
         {
             Gradient g = new Gradient();
-            g.mode = mode;
-            g.colorKeys = new GradientColorKey[colorKeys.Count];
-            g.alphaKeys = new GradientAlphaKey[alphaKeys.Count];
-            for (int i = 0; i < colorKeys.Count; i++)
+            g.mode = Mode;
+            g.colorKeys = new GradientColorKey[ColorKeys.Count];
+            g.alphaKeys = new GradientAlphaKey[AlphaKeys.Count];
+            for (int i = 0; i < ColorKeys.Count; i++)
             {
-                Vector4 v = colorKeys[i];
+                Vector4 v = ColorKeys[i];
                 Color c = new Color(v.x, v.y, v.z);
                 g.colorKeys[i] = new GradientColorKey(c, v.w);
             }
-            for (int i = 0; i < alphaKeys.Count; i++)
+            for (int i = 0; i < AlphaKeys.Count; i++)
             {
-                Vector2 v = alphaKeys[i];
+                Vector2 v = AlphaKeys[i];
                 g.alphaKeys[i] = new GradientAlphaKey(v.x, v.y);
             }
             return g;
@@ -346,6 +375,6 @@ namespace UnityEditor.ToonShaderGUI
     [Serializable]
     public class ColorJSON
     {
-        public Color color = Color.white;
+        public Color Color = Color.white;
     }
 }

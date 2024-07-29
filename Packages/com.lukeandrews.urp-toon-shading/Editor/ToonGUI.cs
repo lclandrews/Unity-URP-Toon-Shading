@@ -7,59 +7,81 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
 {
     public static class ToonGUI
     {
-
         public struct ToonSimpleProperties
         {
-
             // Surface Input Props
-            public MaterialProperty backlightStrength;
-            public MaterialProperty edgeShineColor;
-            public MaterialProperty smoothness;
-            public MaterialProperty specColor;
-            public MaterialProperty maskMap;
-            public MaterialProperty specTexMap;
-            public MaterialProperty specTexTile;
-            public MaterialProperty specTexRot;
-            public MaterialProperty bumpScaleProp;
-            public MaterialProperty bumpMapProp;
-            public MaterialProperty occlusionStrength;
+            public MaterialProperty BacklightStrength;
+            public MaterialProperty EdgeShineColor;
+            public MaterialProperty Smoothness;
+            public MaterialProperty SpecColor;
+            public MaterialProperty MaskMap;
+            public MaterialProperty SpecTexMap;
+            public MaterialProperty SpecTexTile;
+            public MaterialProperty SpecTexRot;
+            public MaterialProperty BumpScaleProp;
+            public MaterialProperty BumpMapProp;
+            public MaterialProperty OcclusionStrength;
 
-            // Advanced Props
-            public MaterialProperty fillSpecular;
-            public MaterialProperty fillOcclusion;
-            public MaterialProperty fillEmission;
-            public MaterialProperty fillSmoothness;
+            //Outline
+            public MaterialProperty OutlineWidth;
+            public MaterialProperty OutlineWidthMap;
+            public MaterialProperty OutlineStartFadeDistance;
+            public MaterialProperty OutlineEndFadeDistance;
+            public MaterialProperty OutlineColor;
+            public MaterialProperty OutlineOffsetZ;
 
-            public MaterialProperty specular;
-            public MaterialProperty edgeShine;
-            public MaterialProperty backlight;
+            // Toggles
+            public MaterialProperty FillSpecular;
+            public MaterialProperty FillOcclusion;
+            public MaterialProperty FillEmission;
+            public MaterialProperty FillSmoothness;
+
+            public MaterialProperty Specular;
+            public MaterialProperty EdgeShine;
+            public MaterialProperty Backlight;
+
+            public MaterialProperty Outline;
+            public MaterialProperty OutlineFade;
+
+            public static readonly ShaderTagId CustomPassTagId = new ShaderTagId("SRPDefaultUnlit");
 
             public ToonSimpleProperties(MaterialProperty[] properties)
             {
-                backlightStrength = BaseShaderGUI.FindProperty("_BacklightStrength", properties, false);
-                edgeShineColor = BaseShaderGUI.FindProperty("_ShineColor", properties, false);
-                smoothness = BaseShaderGUI.FindProperty("_Smoothness", properties, false);
-                specColor = BaseShaderGUI.FindProperty("_SpecColor", properties, false);
-                maskMap = BaseShaderGUI.FindProperty("_ToonMask", properties, false);
-                specTexMap = BaseShaderGUI.FindProperty("_SpecTexMap", properties, false);
-                specTexTile = BaseShaderGUI.FindProperty("_SpecTexTile", properties, false);
-                specTexRot = BaseShaderGUI.FindProperty("_SpecTexRot", properties, false);
-                bumpMapProp = BaseShaderGUI.FindProperty("_BumpMap", properties, false);
-                bumpScaleProp = BaseShaderGUI.FindProperty("_BumpScale", properties, false);
-                occlusionStrength = BaseShaderGUI.FindProperty("_OcclusionStrength", properties, false);
-                // Advanced Props
-                fillSpecular = BaseShaderGUI.FindProperty("_FillSpecular", properties, false);
-                fillOcclusion = BaseShaderGUI.FindProperty("_FillOcclusion", properties, false);
-                fillEmission = BaseShaderGUI.FindProperty("_FillEmission", properties, false);
-                fillSmoothness = BaseShaderGUI.FindProperty("_FillSmoothness", properties, false);
+                BacklightStrength = BaseShaderGUI.FindProperty("_BacklightStrength", properties, false);
+                EdgeShineColor = BaseShaderGUI.FindProperty("_ShineColor", properties, false);
+                Smoothness = BaseShaderGUI.FindProperty("_Smoothness", properties, false);
+                SpecColor = BaseShaderGUI.FindProperty("_SpecColor", properties, false);
+                MaskMap = BaseShaderGUI.FindProperty("_ToonMask", properties, false);
+                SpecTexMap = BaseShaderGUI.FindProperty("_SpecTexMap", properties, false);
+                SpecTexTile = BaseShaderGUI.FindProperty("_SpecTexTile", properties, false);
+                SpecTexRot = BaseShaderGUI.FindProperty("_SpecTexRot", properties, false);
+                BumpMapProp = BaseShaderGUI.FindProperty("_BumpMap", properties, false);
+                BumpScaleProp = BaseShaderGUI.FindProperty("_BumpScale", properties, false);
+                OcclusionStrength = BaseShaderGUI.FindProperty("_OcclusionStrength", properties, false);
 
-                specular = BaseShaderGUI.FindProperty("_Specular", properties, false);
-                backlight = BaseShaderGUI.FindProperty("_Backlight", properties, false);
-                edgeShine = BaseShaderGUI.FindProperty("_EdgeShine", properties, false);
+                // Outline
+                OutlineWidth = BaseShaderGUI.FindProperty("_OutlineWidth", properties, false);
+                OutlineWidthMap = BaseShaderGUI.FindProperty("_OutlineMap", properties, false);
+                OutlineStartFadeDistance = BaseShaderGUI.FindProperty("_OutlineStartFadeDistance", properties, false);
+                OutlineEndFadeDistance = BaseShaderGUI.FindProperty("_OutlineEndFadeDistance", properties, false);
+                OutlineColor = BaseShaderGUI.FindProperty("_OutlineColor", properties, false);
+                OutlineOffsetZ = BaseShaderGUI.FindProperty("_OutlineOffsetZ", properties, false);
+
+                // Toggles
+                FillSpecular = BaseShaderGUI.FindProperty("_FillSpecular", properties, false);
+                FillOcclusion = BaseShaderGUI.FindProperty("_FillOcclusion", properties, false);
+                FillEmission = BaseShaderGUI.FindProperty("_FillEmission", properties, false);
+                FillSmoothness = BaseShaderGUI.FindProperty("_FillSmoothness", properties, false);
+
+                Specular = BaseShaderGUI.FindProperty("_Specular", properties, false);
+                Backlight = BaseShaderGUI.FindProperty("_Backlight", properties, false);
+                EdgeShine = BaseShaderGUI.FindProperty("_EdgeShine", properties, false);
+                Outline = BaseShaderGUI.FindProperty("_Outline", properties, false);
+                OutlineFade = BaseShaderGUI.FindProperty("_OutlineFade", properties, false);
             }
         }
 
-        public static void SetMaterialKeywords(Material material)
+        public static void SetMaterialKeywordsAndPasses(Material material)
         {
             // Clear all keywords for fresh start
             material.shaderKeywords = null;
@@ -182,6 +204,20 @@ namespace UnityEditor.Rendering.Universal.ShaderGUI
             if (material.HasProperty("_OcclusionMap"))
             {
                 CoreUtils.SetKeyword(material, "_OCCLUSIONMAP", material.GetTexture("_OcclusionMap"));
+            }
+
+            // Outline
+            bool outline = false;
+            if (material.HasProperty("_Outline"))
+            {
+                outline = material.GetFloat("_Outline") == 1.0f;
+                CoreUtils.SetKeyword(material, "_OUTLINE", outline);
+                material.SetShaderPassEnabled(ToonSimpleProperties.CustomPassTagId.name, outline);
+            }
+            
+            if (material.HasProperty("_OutlineFade"))
+            {
+                CoreUtils.SetKeyword(material, "_OUTLINE_FADE", material.GetFloat("_OutlineFade") == 1.0f && outline);
             }
         }
     }

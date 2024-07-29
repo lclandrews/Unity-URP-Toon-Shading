@@ -27,8 +27,16 @@
 
         _EmissionColor("Emission Color", Color) = (0,0,0)
 
-        // Editor toggles for keywords
+        _OutlineWidth ("Outline Width", Range(0.0, 10.0)) = 1.0
+        _OutlineMap ("Outline Width Map", 2D) = "white" {}
 
+        _OutlineStartFadeDistance ("Outline Start Fade Distance", Float ) = 0.5
+        _OutlineEndFadeDistance ("Outline End Fade Distance", Float ) = 100       
+
+        _OutlineColor ("Outline Color", Color) = (0.5,0.5,0.5,1)
+        _OutlineOffsetZ ("Outline Camera Z Offset", Float) = 0
+
+        // Editor toggles for keywords
         [ToggleOff] _FillSpecular("Fill Specular Channel", Float) = 1.0
         [ToggleOff] _FillOcclusion("Fill Occlusion Channel", Float) = 1.0
         [ToggleOff] _FillEmission("Fill Emission Channel", Float) = 1.0
@@ -37,6 +45,9 @@
         [ToggleOff] _Specular("Specular", Float) = 1.0
         [ToggleOff] _Backlight("Backlight", Float) = 1.0
         [ToggleOff] _EdgeShine("Edge Shine", Float) = 1.0
+
+        [ToggleOff] _Outline("Outline", Float) = 0.0
+        [ToggleOff] _OutlineFade("Outline Fade", Float) = 0.0
 
         // Blending state
         [HideInInspector] _AlphaClip("__clip", Float) = 0.0
@@ -47,7 +58,7 @@
 
         // Editmode props
         [HideInInspector] _QueueOffset("Queue offset", Float) = 0.0
-    }
+    }        
 
     SubShader
     {
@@ -56,6 +67,38 @@
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
         Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "IgnoreProjector" = "True"}
         LOD 300
+
+        Pass 
+        {
+            Name "Outline"
+            Tags 
+            {
+                "LightMode" = "SRPDefaultUnlit"
+            }
+
+            Cull [_SRPDefaultUnlitColMode]
+            ColorMask [_SPRDefaultUnlitColorMask]
+
+            HLSLPROGRAM
+            #pragma prefer_hlslcc gles
+            #pragma exclude_renderers d3d11_9x
+            #pragma target 2.0          
+
+            #pragma shader_feature _ALPHATEST_ON
+            #pragma shader_feature _OUTLINE
+            #pragma shader_feature _OUTLINE_FADE
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+
+            #include "ToonInput.hlsl"
+            #include "ToonOutline.hlsl"
+
+            #pragma vertex ToonOutlinePassVertex
+            #pragma fragment ToonOutlinePassFragment
+            ENDHLSL
+        }
 
         // ------------------------------------------------------------------
         //  Forward pass. Shades all light in a single pass. GI + emission + Fog
