@@ -4,7 +4,6 @@ struct Attributes
 {
     float4 positionOS : POSITION;
     float3 normalOS : NORMAL;
-    float4 tangentOS : TANGENT;
     float2 texcoord : TEXCOORD0;
     
     UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -26,9 +25,6 @@ Varyings ToonOutlinePassVertex (Attributes input) {
     UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    float3 vertexPositionWS = TransformObjectToWorld(input.positionOS.xyz);
-
-    VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
     output.uv = TRANSFORM_TEX(input.texcoord, _OutlineMap);
     
     half4 outline = SAMPLE_TEXTURE2D_LOD(_OutlineMap, sampler_OutlineMap, output.uv, 0);
@@ -40,9 +36,9 @@ Varyings ToonOutlinePassVertex (Attributes input) {
 #if defined(_OUTLINE_FADE)   
     half distanceStep = smoothstep(_OutlineEndFadeDistance, _OutlineStartFadeDistance, distance(objectPositionWS.xyz, GetCameraPositionWS()));
 #else
-    half distanceStep = step(_OutlineEndFadeDistance, distance(objectPositionWS.xyz, GetCameraPositionWS()));
+    half distanceStep = 1 - step(_OutlineEndFadeDistance, distance(objectPositionWS.xyz, GetCameraPositionWS()));
 #endif
-    half width = (_OutlineWidth * 0.001 * distanceStep * outline.rgb).r;
+    half width = (_OutlineWidth * 0.01 * distanceStep * outline.rgb).r;
         
 #if defined(UNITY_REVERSED_Z)
     float zOffset = _OutlineOffsetZ * -0.01;

@@ -76,8 +76,7 @@
                 "LightMode" = "SRPDefaultUnlit"
             }
 
-            Cull [_SRPDefaultUnlitColMode]
-            ColorMask [_SPRDefaultUnlitColorMask]
+            Cull Front
 
             HLSLPROGRAM
             #pragma prefer_hlslcc gles
