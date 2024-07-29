@@ -1,0 +1,1 @@
+https://github.com/lclandrews/Unity-URP-Toon-Shading.git?path=Packages/com.lukeandrews.urp-toon-shading
