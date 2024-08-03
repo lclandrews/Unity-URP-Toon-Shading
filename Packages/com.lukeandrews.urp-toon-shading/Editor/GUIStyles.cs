@@ -82,7 +82,7 @@ namespace ToonShading.Editor
         public static readonly GUIContent AdvLighting = new GUIContent("Lighting",
             "These settings describe the way light interacts with the surface.");
 
-        public static readonly GUIContent OutlineText = new GUIContent("Enable",
+        public static readonly GUIContent OutlineText = new GUIContent("Enable Outline",
             "Enables outline.");
 
         public static readonly GUIContent OutlineSettingsText = new GUIContent("Outline",
