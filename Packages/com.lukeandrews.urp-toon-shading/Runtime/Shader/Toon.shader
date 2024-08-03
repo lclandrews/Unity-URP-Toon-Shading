@@ -27,7 +27,7 @@
 
         _EmissionColor("Emission Color", Color) = (0,0,0)
 
-        _OutlineWidth ("Outline Width", Range(0.0, 10.0)) = 1.0
+        _OutlineWidth ("Outline Width", Float) = 0.1
         _OutlineMap ("Outline Width Map", 2D) = "white" {}
 
         _OutlineStartFadeDistance ("Outline Start Fade Distance", Float ) = 0.5
@@ -50,11 +50,13 @@
         [ToggleOff] _OutlineFade("Outline Fade", Float) = 0.0
 
         // Blending state
-        [HideInInspector] _AlphaClip("__clip", Float) = 0.0
+        [ToggleUI] _AlphaClip("__clip", Float) = 0.0
         [HideInInspector] _Cull("__cull", Float) = 2.0
+        [HideInInspector] _ZWrite("__zw", Float) = 1.0
+        [HideInInspector] _AlphaToMask("__alphaToMask", Float) = 0.0
 
         // Shadows keyword
-        _ReceiveShadows("Receive Shadows", Float) = 1.0
+        [ToggleUI] _ReceiveShadows("Receive Shadows", Float) = 1.0
 
         // Editmode props
         [HideInInspector] _QueueOffset("Queue offset", Float) = 0.0
@@ -92,7 +94,7 @@
             #pragma multi_compile_instancing
 
             #include "ToonInput.hlsl"
-            #include "ToonOutline.hlsl"
+            #include "ToonOutlinePass.hlsl"
 
             #pragma vertex ToonOutlinePassVertex
             #pragma fragment ToonOutlinePassFragment
@@ -109,8 +111,9 @@
             Name "ForwardLit"
             Tags{"LightMode" = "UniversalForward"}
 
-            ZWrite On
+            ZWrite[_ZWrite]
             Cull[_Cull]
+            AlphaToMask[_AlphaToMask]
 
             HLSLPROGRAM
             // Required to compile gles 2.0 with standard SRP library
@@ -142,24 +145,43 @@
 
             // -------------------------------------
             // Universal Pipeline keywords
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
-            //#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX
-            #pragma multi_compile _ _ADDITIONAL_LIGHTS
-            #pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile _ _SHADOWS_SOFT
-            //#pragma multi_compile _ _MIXED_LIGHTING_SUBTRACTIVE
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ EVALUATE_SH_MIXED EVALUATE_SH_VERTEX
+            #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
+            #pragma multi_compile _ SHADOWS_SHADOWMASK
+            #pragma multi_compile _ _LIGHT_LAYERS
+            #pragma multi_compile _ _FORWARD_PLUS
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+            #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
+            #pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
+            #pragma multi_compile_fragment _ _LIGHT_COOKIES
+            #include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
 
             // -------------------------------------
             // Unity defined keywords
-            //#pragma multi_compile _ DIRLIGHTMAP_COMBINED
-            //#pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DIRLIGHTMAP_COMBINED
+            #pragma multi_compile _ LIGHTMAP_ON
+            #pragma multi_compile _ DYNAMICLIGHTMAP_ON
             #pragma multi_compile_fog
+            #pragma multi_compile_fragment _ DEBUG_DISPLAY
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
 
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
+            #pragma instancing_options renderinglayer
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
+            //--------------------------------------
+            // Defines
+            #define BUMP_SCALE_NOT_SUPPORTED 1
+
+            // -------------------------------------
+            // Includes
             #include "ToonInput.hlsl"
             #include "ToonVertexPass.hlsl"
             #include "ToonFragmentPass.hlsl"
@@ -196,34 +218,29 @@
             // -------------------------------------
             // Material Keywords
             #pragma shader_feature_local _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
+
+            // -------------------------------------
+            // Unity defined keywords
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
 
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
-            // -------------------------------------
-            // Universal Pipeline keywords
-
-            // -------------------------------------
-            // Unity defined keywords
-            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
-
             // This is used during shadow map generation to differentiate between directional and punctual light shadows, as they use different formulas to apply Normal Bias
             #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
 
             // -------------------------------------
             // Includes
-            #include "ToonInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
 
         Pass
         {
-            // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
-            // no LightMode tag are also rendered by Universal Render Pipeline
             Name "GBuffer"
             Tags
             {
@@ -245,24 +262,17 @@
 
             // -------------------------------------
             // Shader Stages
-            #pragma vertex LitGBufferPassVertex
-            #pragma fragment LitGBufferPassFragment
+            #pragma vertex LitPassVertexSimple
+            #pragma fragment LitPassFragmentSimple
 
             // -------------------------------------
             // Material Keywords
-            #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local_fragment _ALPHATEST_ON
-            //#pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
+            //#pragma shader_feature _ALPHAPREMULTIPLY_ON
+            #pragma shader_feature_local_fragment _ _SPECGLOSSMAP _SPECULAR_COLOR
+            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
+            #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local_fragment _EMISSION
-            #pragma shader_feature_local_fragment _METALLICSPECGLOSSMAP
-            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature_local_fragment _OCCLUSIONMAP
-            #pragma shader_feature_local _PARALLAXMAP
-            #pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
-
-            #pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
-            #pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
-            #pragma shader_feature_local_fragment _SPECULAR_SETUP
             #pragma shader_feature_local _RECEIVE_SHADOWS_OFF
 
             // -------------------------------------
@@ -270,22 +280,21 @@
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             //#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             //#pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile_fragment _ _REFLECTION_PROBE_BLENDING
-            #pragma multi_compile_fragment _ _REFLECTION_PROBE_BOX_PROJECTION
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
             #pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
-            #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
 
             // -------------------------------------
             // Unity defined keywords
-            #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
-            #pragma multi_compile _ SHADOWS_SHADOWMASK
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile _ DYNAMICLIGHTMAP_ON
-            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+            #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
+            #pragma multi_compile _ SHADOWS_SHADOWMASK
             #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+            #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
+            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
 
             //--------------------------------------
             // GPU Instancing
@@ -293,11 +302,14 @@
             #pragma instancing_options renderinglayer
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
+            //--------------------------------------
+            // Defines
+            #define BUMP_SCALE_NOT_SUPPORTED 1
+
             // -------------------------------------
             // Includes
-            #include "ToonInput.hlsl"
-            #include "ToonSurface.hlsl" 
-            #include "ToonGBufferPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitGBufferPass.hlsl"
             ENDHLSL
         }
 
@@ -326,7 +338,7 @@
             // -------------------------------------
             // Material Keywords
             #pragma shader_feature_local _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
 
             // -------------------------------------
             // Unity defined keywords
@@ -339,7 +351,7 @@
 
             // -------------------------------------
             // Includes
-            #include "ToonInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -369,16 +381,13 @@
             // -------------------------------------
             // Material Keywords
             #pragma shader_feature_local _NORMALMAP
-            #pragma shader_feature_local _PARALLAXMAP
-            #pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
             #pragma shader_feature_local _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
 
             // -------------------------------------
             // Unity defined keywords
             #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
 
-            // -------------------------------------
             // Universal Pipeline keywords
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
 
@@ -389,8 +398,8 @@
 
             // -------------------------------------
             // Includes
-            #include "ToonInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
 
@@ -413,24 +422,18 @@
             // -------------------------------------
             // Shader Stages
             #pragma vertex UniversalVertexMeta
-            #pragma fragment UniversalFragmentMetaLit
+            #pragma fragment UniversalFragmentMetaSimple
 
             // -------------------------------------
             // Material Keywords
-            #pragma shader_feature_local_fragment _SPECULAR_SETUP
             #pragma shader_feature_local_fragment _EMISSION
-            #pragma shader_feature_local_fragment _METALLICSPECGLOSSMAP
-            #pragma shader_feature_local_fragment _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _ _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-            #pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
             #pragma shader_feature_local_fragment _SPECGLOSSMAP
             #pragma shader_feature EDITOR_VISUALIZATION
 
             // -------------------------------------
             // Includes
-            #include "ToonInput.hlsl"
-            #include "ToonSurface.hlsl" 
-            #include "ToonMetaPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
             ENDHLSL
         }
@@ -441,13 +444,9 @@
             Tags
             {
                 "LightMode" = "Universal2D"
+                "RenderType" = "Transparent"
+                "Queue" = "Transparent"
             }
-
-            // -------------------------------------
-            // Render State Commands
-            Blend[_SrcBlend][_DstBlend]
-            ZWrite[_ZWrite]
-            Cull[_Cull]
 
             HLSLPROGRAM
             #pragma target 2.0
@@ -462,16 +461,14 @@
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
 
-            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
-
             // -------------------------------------
             // Includes
-            #include "ToonInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
             ENDHLSL
         }
     }
 
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "UnityEditor.Rendering.Universal.ShaderGUI.ToonShader"
+    CustomEditor "ToonShading.Editor.ToonShaderGUI"
 }

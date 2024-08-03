@@ -1,9 +1,20 @@
 #ifndef TOON_FRAG_PASS_INCLUDED
 #define TOON_FRAG_PASS_INCLUDED
 
-#include "ToonSurface.hlsl" 
+#if defined(LOD_FADE_CROSSFADE)
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+#endif
 
-half4 ToonPassFragment(Varyings input) : SV_Target
+#include "ToonSurfaceData.hlsl"
+
+#include "Core/ToonURP.hlsl"
+#include "Core/ToonLighting.hlsl"
+
+void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
+#ifdef _WRITE_RENDERING_LAYERS
+    , out float4 outRenderingLayers : SV_Target1
+#endif
+)
 {
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -11,75 +22,117 @@ half4 ToonPassFragment(Varyings input) : SV_Target
     float2 uv = float2(input.uAndNormalWS.x, input.vAndViewDirWS.x);
 
     ToonSurfaceData surfaceData;
-    InitToonSurfaceData(uv, surfaceData);
+    InitToonSurfaceData(uv, surfaceData);    
 
+#ifdef LOD_FADE_CROSSFADE
+    LODFadeCrossFade(input.positionCS);
+#endif
+    
     ToonInputData inputData;
     InitToonInputData(input, surfaceData.normalTS, inputData);
+    
+#ifdef _DBUFFER
+    ApplyDecal(positionCS,
+        surfaceData.albedo,
+        surfaceData.specular,
+        inputData.normalWS,
+        metallic,
+        surfaceData.occlusion,
+        surfaceData.smoothness);
+#endif
+  
+// TODO: Finish implementing debug view
+//#if defined(DEBUG_DISPLAY)
+//    half4 debugColor;
+//
+//    if (CanDebugOverrideOutputColor(inputData, surfaceData, debugColor))
+//    {
+//        outColor = debugColor;
+//        return;
+//    }
+//#endif
+    
+    uint meshRenderingLayers = GetMeshRenderingLayer();
+    half4 shadowMask = ToonCalculateShadowMask(inputData.shadowMask);
+    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData.normalizedScreenSpaceUV, surfaceData.occlusion);
+    Light mainLight = ToonGetMainLight(inputData.shadowCoord, inputData.positionWS, shadowMask, aoFactor);
 
-    Light mainLight = GetMainLight(inputData.shadowCoord);
-
+    MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, aoFactor);   
+    inputData.bakedGI *= surfaceData.albedo;
+    
+    half sVdotN = 0;
 #if !defined(_BACKLIGHT_OFF) || !defined(_EDGESHINE_OFF)
-    half sVdotN = saturate(dot(inputData.viewDirectionWS, inputData.normalWS));
+    sVdotN = saturate(dot(inputData.viewDirectionWS, inputData.normalWS));
 #endif
-
-    half3 light = inputData.bakedGI + _AmbientColor;
-
-    half NdotML = dot(inputData.normalWS, mainLight.direction);
-    half rampedLight = GetSmoothStepShading(NdotML, mainLight.shadowAttenuation * surfaceData.occlusion, _SurfaceShadowLimit, _SurfaceHighlightLimit, _MidtoneValue, _EdgeSoftness);
-
-#ifndef _BACKLIGHT_OFF
-    light += max(rampedLight, ToonHardBacklight(inputData.cameraDirWS, mainLight.direction, _BacklightStrength, sVdotN)) * mainLight.color;
-#else
-    light += rampedLight * mainLight.color;
-#endif    
-
+    
+    half smoothness = 0;
+    half specular = 0;
 #ifndef _SPECULAR_OFF
-    half smoothness = exp2(10 * surfaceData.smoothness + 1);
-    half specularValue = RGBValue(surfaceData.specular);
-
-    half3 specular = ToonLightSpecular(mainLight.direction, mainLight.color, inputData.normalWS, inputData.viewDirectionWS,
-        surfaceData.specular, specularValue, surfaceData.specularTexture, smoothness);
+    smoothness = exp2(10 * surfaceData.smoothness + 1);
+    specular = RGBValue(surfaceData.specular);
 #endif
-
-#ifdef _ADDITIONAL_LIGHTS
-    int pixelLightCount = GetAdditionalLightsCount();
-    for (int i = 0; i < pixelLightCount; ++i)
+    
+    LightingData lightingData = ToonCreateLightingData(inputData.bakedGI, surfaceData.emission);
+#ifdef _LIGHT_LAYERS
+    if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
+#endif
     {
-        Light additionalLight = GetAdditionalLight(i, inputData.positionWS);
-        half NdotAL = dot(inputData.normalWS, additionalLight.direction);
-
-        half aSteppedShade = GetSmoothStepShading(NdotAL, additionalLight.shadowAttenuation * surfaceData.occlusion, _SurfaceShadowLimit, _SurfaceHighlightLimit, _MidtoneValue, _EdgeSoftness);
-        half aSteppedAttenuation = GetSmoothStepAttenuation(additionalLight.distanceAttenuation, _AttenuationShadowLimit, _AttenuationHighlightLimit, _MidtoneValue, _EdgeSoftness);
-
-#ifndef _BACKLIGHT_OFF
-        light += additionalLight.color * max(ToonHardBacklight(inputData.cameraDirWS, additionalLight.direction, _BacklightStrength, sVdotN) * aSteppedAttenuation, aSteppedShade * aSteppedAttenuation);
-#else
-        light += additionalLight.color * (aSteppedShade * aSteppedAttenuation);
-#endif
-
-#ifndef _SPECULAR_OFF
-        specular += ToonLightSpecular(additionalLight.direction, additionalLight.color * aSteppedAttenuation, inputData.normalWS, inputData.viewDirectionWS,
-            surfaceData.specular, specularValue, surfaceData.specularTexture, smoothness);
-#endif  
+        lightingData.mainLightColor += CalculateToonLighting(mainLight, inputData, surfaceData, sVdotN, smoothness, specular,
+            _MainShadowLimit, _MainHighlightLimit, _MainEdgeSoftness, _MidtoneValue);
     }
+    
+#if defined(_ADDITIONAL_LIGHTS)
+    uint pixelLightCount = GetAdditionalLightsCount();
+
+#if USE_FORWARD_PLUS
+    for (uint lightIndex = 0; lightIndex < min(URP_FP_DIRECTIONAL_LIGHTS_COUNT, MAX_VISIBLE_LIGHTS); lightIndex++)
+    {
+        FORWARD_PLUS_SUBTRACTIVE_LIGHT_CHECK
+
+        Light light = ToonGetAdditionalLight(lightIndex, inputData.positionWS, shadowMask, aoFactor);
+#ifdef _LIGHT_LAYERS
+        if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
+#endif
+        {
+            lightingData.additionalLightsColor += CalculateToonLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
+                    _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness, _MidtoneValue);
+        }
+    }
+#endif // End USE_FORWARD_PLUS
+
+    LIGHT_LOOP_BEGIN(pixelLightCount)
+    Light light = ToonGetAdditionalLight(lightIndex, inputData.positionWS, shadowMask, aoFactor);
+#ifdef _LIGHT_LAYERS
+    if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
+#endif
+    {
+        lightingData.additionalLightsColor += CalculateToonLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
+                _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness, _MidtoneValue);
+    }
+    LIGHT_LOOP_END
 #endif
 
-    half3 albedo = light * surfaceData.albedo;
+#if defined(_ADDITIONAL_LIGHTS_VERTEX)
+    lightingData.vertexLightingColor += inputData.vertexLighting * surfaceData.albedo;
+    outColor.rgb = lightingData.vertexLightingColor;
+    return;
+#endif // End defined(_ADDITIONAL_LIGHTS)
 
-#ifndef _SPECULAR_OFF
-    half4 color = half4(albedo.rgb + specular.rgb, surfaceData.alpha);
-#else
-    half4 color = half4(albedo.rgb, surfaceData.alpha);
-#endif    
-
+    half4 color = CalculateFinalColor(lightingData, surfaceData.alpha);
+    
 #ifndef _EDGESHINE_OFF
     half VdotL = dot(inputData.viewDirectionWS, mainLight.direction);
-    color.rgb += ToonHardEdgeShine(mainLight.color, VdotL, NdotML, sVdotN) * mainLight.shadowAttenuation * _ShineColor;
+    half NdotL = dot(inputData.normalWS, mainLight.direction);
+    color.rgb += ToonHardEdgeShine(mainLight.color, VdotL, NdotL, sVdotN) * mainLight.shadowAttenuation * _ShineColor;
 #endif
 
-    color.rgb += surfaceData.emission;
-    color.rgb = MixFog(color.rgb, inputData.fogCoord);
-    return color;
+    color.rgb = MixFog(color.rgb, inputData.fogCoord);    
+    outColor = color;
+
+#ifdef _WRITE_RENDERING_LAYERS
+    uint renderingLayers = GetMeshRenderingLayer();
+    outRenderingLayers = float4(EncodeMeshRenderingLayer(renderingLayers), 0, 0, 0);
+#endif
 }
 
 #endif

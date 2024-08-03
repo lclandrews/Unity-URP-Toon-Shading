@@ -1,5 +1,7 @@
-#ifndef TOON_SURFACE_INCLUDED
-#define TOON_SURFACE_INCLUDED
+#ifndef TOON_SURFACE_DATA_INCLUDED
+#define TOON_SURFACE_DATA_INCLUDED
+
+#include "Core/ToonHelpers.hlsl"
 
 struct ToonSurfaceData
 {
@@ -27,5 +29,4 @@ inline void InitToonSurfaceData(float2 uv, out ToonSurfaceData outData)
     outData.occlusion = SampleOcclusion(maskValues.g, _OcclusionStrength);
     outData.emission = SampleEmission(outData.albedo, _EmissionColor, maskValues.b);
 }
-
 #endif

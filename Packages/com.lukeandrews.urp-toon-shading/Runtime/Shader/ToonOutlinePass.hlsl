@@ -38,7 +38,7 @@ Varyings ToonOutlinePassVertex (Attributes input) {
 #else
     half distanceStep = 1 - step(_OutlineEndFadeDistance, distance(objectPositionWS.xyz, GetCameraPositionWS()));
 #endif
-    half width = (_OutlineWidth * 0.01 * distanceStep * outline.rgb).r;
+    half width = (_OutlineWidth * 0.001 * distanceStep * outline.rgb).r;
         
 #if defined(UNITY_REVERSED_Z)
     float zOffset = _OutlineOffsetZ * -0.01;
