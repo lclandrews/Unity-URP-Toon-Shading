@@ -3,11 +3,11 @@
     public static class DefaultValues
     {
         public const float ShadowStepRangeMin = 0.0f;
-        public const float ShadowStepRangeMax = 0.4f;
+        public const float ShadowStepRangeMax = 0.6f;
 
-        public const float ShadowStepDefault = 0.0f;
+        public const float ShadowStepDefault = 0.05f;
 
-        public const float HighlightStepRangeMin = 0.4f;
+        public const float HighlightStepRangeMin = 0.2f;
         public const float HighlightStepRangeMax = 1.0f;
 
         public const float HighlightStepDefault = 0.75f;        
