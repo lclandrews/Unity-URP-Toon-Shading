@@ -78,7 +78,7 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
 #endif
     {
         lightingData.mainLightColor += CalculateToonLighting(mainLight, inputData, surfaceData, sVdotN, smoothness, specular,
-            _MainShadowLimit, _MainHighlightLimit, _MainEdgeSoftness, _MidtoneValue);
+            _MainShadowLimit, _MainHighlightLimit, _MainEdgeSoftness);
     }
     
 #if defined(_ADDITIONAL_LIGHTS)
@@ -95,7 +95,7 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
 #endif
         {
             lightingData.additionalLightsColor += CalculateToonLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
-                    _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness, _MidtoneValue);
+                    _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
         }
     }
 #endif // End USE_FORWARD_PLUS
@@ -107,7 +107,7 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
 #endif
     {
         lightingData.additionalLightsColor += CalculateToonLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
-                _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness, _MidtoneValue);
+                _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
     }
     LIGHT_LOOP_END
 #endif

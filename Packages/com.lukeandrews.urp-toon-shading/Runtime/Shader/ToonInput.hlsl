@@ -14,7 +14,9 @@ half _AdditionalShadowLimit;
 half _AdditionalHighlightLimit;
 half _AdditionalEdgeSoftness;
 
+half _HighlightValue;
 half _MidtoneValue;
+half _ShadowValue;
 
 CBUFFER_START(UnityPerMaterial)
 float4 _BaseMap_ST;

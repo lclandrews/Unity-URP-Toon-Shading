@@ -10,17 +10,23 @@ namespace ToonShading.Editor
         public static GUIContent AdditionalLightingText = new GUIContent("Additional Light Shading",
             "The ramp properties of additional lights.");
 
-        public static GUIContent ShadowText = new GUIContent("Shadow Limit",
+        public static GUIContent ShadowStepText = new GUIContent("Shadow Limit",
             "Used to control the shadow limit of a surfaces shading.");
 
-        public static GUIContent HighlightText = new GUIContent("Highlight Limit",
+        public static GUIContent HighlightStepText = new GUIContent("Highlight Limit",
             "Used to control the highlight limit of a surfaces shading.");
 
         public static GUIContent EdgeSoftnessText = new GUIContent("Edge Softness",
             "Used to control the edge softness between lighting bands.");
 
+        public static GUIContent HighlightText = new GUIContent("Highlight Value",
+            "Controls the value of the highlight.");
+
         public static GUIContent MidToneText = new GUIContent("Mid Tone Value",
             "Controls the value of the mid tones.");
+
+        public static GUIContent ShadowText = new GUIContent("Shadow Value",
+            "Controls the value of the shadow.");
 
         public static GUIContent MaskMapText = new GUIContent("Mask Map",
             "Map that stores: Specular (R), Occlusion (G), Emission (B), Smoothness (A).");

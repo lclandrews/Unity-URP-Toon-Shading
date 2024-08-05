@@ -128,7 +128,7 @@ Varyings ToonPassVertex(Attributes input)
 
 #ifdef _ADDITIONAL_LIGHTS_VERTEX
     output.vertexLight = 
-        ToonVertexLighting(vertexPositionWS, normalInput.normalWS, _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness, _MidtoneValue);
+        ToonVertexLighting(vertexPositionWS, normalInput.normalWS, _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
 #endif
     TOON_OUTPUT_FOG(output.staticLightmapUvAndFog, output.vertexSHAndFog, fogFactor);
 

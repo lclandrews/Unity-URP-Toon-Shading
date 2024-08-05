@@ -18,7 +18,9 @@
         public const string OutlineFoldout = "OutlineFoldout";
         public const string AdvancedFoldout = "AdvancedFoldout";
 
-        public const string MidTone = "GlobalMidtone";
+        public const string Highlight = "GlobalHighlight";
+        public const string Midtone = "GlobalMidtone";
+        public const string Shadow = "GlobalShadow";
 
         public static string GetStateKey(string header)
         {

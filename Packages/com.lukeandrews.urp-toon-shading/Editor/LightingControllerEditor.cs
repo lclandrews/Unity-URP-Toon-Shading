@@ -15,7 +15,9 @@ namespace ToonShading.Editor
         private SavedFloat _globalAddHighlight = null;
         private SavedFloat _globalAddEdge = null;
 
+        private SavedFloat _globalHighlight = null;
         private SavedFloat _globalMidtone = null;
+        private SavedFloat _globalShadow = null;
 
         private GUIContent _controllerFromShader = new GUIContent("Set From Shader", "Sets the controllers values to match those in the shader GUI.");
         private GUIContent _shaderFromController = new GUIContent("Set Shader Values", "Sets all shader GUI values to match the current controller.");
@@ -24,15 +26,17 @@ namespace ToonShading.Editor
 
         void OnEnable()
         {
-            _globalMainShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainShadow), DefaultValues.ShadowDefault);
-            _globalMainHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainHighlight), DefaultValues.HighlightDefault);
+            _globalMainShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainShadow), DefaultValues.ShadowStepDefault);
+            _globalMainHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainHighlight), DefaultValues.HighlightStepDefault);
             _globalMainEdge = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainEdgeSoftness), DefaultValues.EdgeDefault);
 
-            _globalAddShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalShadow), DefaultValues.ShadowDefault);
-            _globalAddHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalHighlight), DefaultValues.HighlightDefault);
+            _globalAddShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalShadow), DefaultValues.ShadowStepDefault);
+            _globalAddHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalHighlight), DefaultValues.HighlightStepDefault);
             _globalAddEdge = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalEdgeSoftness), DefaultValues.EdgeDefault);
 
-            _globalMidtone = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MidTone), DefaultValues.MidtoneDefault);            
+            _globalHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Highlight), DefaultValues.HighlightDefault);
+            _globalMidtone = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Midtone), DefaultValues.MidtoneDefault);
+            _globalShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Shadow), DefaultValues.ShadowDefault);
         }
 
         public override void OnInspectorGUI()
@@ -46,7 +50,8 @@ namespace ToonShading.Editor
                 if (GUILayout.Button(_controllerFromShader))
                 {
                     targetController.ApplyControllerSettings(_globalMainShadow.value, _globalMainHighlight.value, _globalMainEdge.value,
-                        _globalAddShadow.value, _globalAddHighlight.value, _globalAddEdge.value, _globalMidtone.value);
+                        _globalAddShadow.value, _globalAddHighlight.value, _globalAddEdge.value, _globalHighlight.value, _globalMidtone.value,
+                        _globalShadow.value);
                 }
 
                 if (GUILayout.Button(_shaderFromController))
@@ -58,7 +63,9 @@ namespace ToonShading.Editor
                     _globalAddShadow.value = targetController.AdditionalShadow;
                     _globalAddHighlight.value = targetController.AdditionalHighlight;
                     _globalAddEdge.value = targetController.AdditionalEdgeSoftness;
-                    _globalMidtone.value = targetController.MidtoneValue;                    
+                    _globalHighlight.value = targetController.HighlightValue;
+                    _globalMidtone.value = targetController.MidtoneValue;
+                    _globalShadow.value = targetController.ShadowValue;
                 }
 
                 if (GUILayout.Button(_applyControllerValues))

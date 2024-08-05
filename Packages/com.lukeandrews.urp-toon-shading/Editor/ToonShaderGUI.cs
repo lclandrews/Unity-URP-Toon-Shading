@@ -97,7 +97,9 @@ namespace ToonShading.Editor
         private SavedFloat _globalAddHighlight = null;
         private SavedFloat _globalAddEdge = null;
 
+        private SavedFloat _globalHighlight = null;
         private SavedFloat _globalMidtone = null;
+        private SavedFloat _globalShadow = null;
 
         // Properties
         private MaterialProperties toonStandardProperties;        
@@ -146,22 +148,26 @@ namespace ToonShading.Editor
             _OutlineFoldout = new SavedBool(GUIHeaders.GetStateKey(GUIHeaders.OutlineFoldout), false);
             _AdvancedFoldout = new SavedBool(GUIHeaders.GetStateKey(GUIHeaders.AdvancedFoldout), false);
 
-            _globalMainShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainShadow), DefaultValues.ShadowDefault);
+            _globalMainShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainShadow), DefaultValues.ShadowStepDefault);
             Shader.SetGlobalFloat(Properties.MainShadowLimit, _globalMainShadow.value);
-            _globalMainHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainHighlight), DefaultValues.HighlightDefault);
+            _globalMainHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainHighlight), DefaultValues.HighlightStepDefault);
             Shader.SetGlobalFloat(Properties.MainHighlightLimit, _globalMainHighlight.value);
             _globalMainEdge = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainEdgeSoftness), DefaultValues.EdgeDefault);
             Shader.SetGlobalFloat(Properties.MainEdgeSoftness, _globalMainEdge.value);
 
-            _globalAddShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalShadow), DefaultValues.ShadowDefault);
+            _globalAddShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalShadow), DefaultValues.ShadowStepDefault);
             Shader.SetGlobalFloat(Properties.AdditionalShadowLimit, _globalAddShadow.value);
-            _globalAddHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalHighlight), DefaultValues.HighlightDefault);
+            _globalAddHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalHighlight), DefaultValues.HighlightStepDefault);
             Shader.SetGlobalFloat(Properties.AdditionalHighlightLimit, _globalAddHighlight.value);
             _globalAddEdge = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalEdgeSoftness), DefaultValues.EdgeDefault);
             Shader.SetGlobalFloat(Properties.AdditionalEdgeSoftness, _globalAddEdge.value);
 
-            _globalMidtone = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MidTone), DefaultValues.MidtoneDefault);
+            _globalHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Highlight), DefaultValues.HighlightDefault);
+            Shader.SetGlobalFloat(Properties.HighlightValue, _globalHighlight.value);
+            _globalMidtone = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Midtone), DefaultValues.MidtoneDefault);
             Shader.SetGlobalFloat(Properties.MidtoneValue, _globalMidtone.value);
+            _globalShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Shadow), DefaultValues.ShadowDefault);
+            Shader.SetGlobalFloat(Properties.ShadowValue, _globalShadow.value);
 
             foreach (var obj in materialEditor.targets)
                 ValidateMaterial((Material)obj);
@@ -293,7 +299,7 @@ namespace ToonShading.Editor
             EditorGUI.BeginChangeCheck();
             float mShadow = Shader.GetGlobalFloat(Properties.MainShadowLimit);
             mShadow = EditorGUILayout.Slider(
-                GUIStyles.ShadowText, mShadow, DefaultValues.ShadowRangeMin, DefaultValues.ShadowRangeMax);
+                GUIStyles.ShadowStepText, mShadow, DefaultValues.ShadowStepRangeMin, DefaultValues.ShadowStepRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat(Properties.MainShadowLimit, mShadow);
@@ -303,7 +309,7 @@ namespace ToonShading.Editor
             EditorGUI.BeginChangeCheck();
             float mHighlight = Shader.GetGlobalFloat(Properties.MainHighlightLimit);
             mHighlight = EditorGUILayout.Slider(
-                GUIStyles.HighlightText, mHighlight, DefaultValues.HighlightRangeMin, DefaultValues.HighlightRangeMax);
+                GUIStyles.HighlightStepText, mHighlight, DefaultValues.HighlightStepRangeMin, DefaultValues.HighlightStepRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat(Properties.MainHighlightLimit, mHighlight);
@@ -329,7 +335,7 @@ namespace ToonShading.Editor
             EditorGUI.BeginChangeCheck();
             float aShadow = Shader.GetGlobalFloat(Properties.AdditionalShadowLimit);
             aShadow = EditorGUILayout.Slider(
-                GUIStyles.ShadowText, aShadow, DefaultValues.ShadowRangeMin, DefaultValues.ShadowRangeMax);
+                GUIStyles.ShadowStepText, aShadow, DefaultValues.ShadowStepRangeMin, DefaultValues.ShadowStepRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat(Properties.AdditionalShadowLimit, aShadow);
@@ -339,7 +345,7 @@ namespace ToonShading.Editor
             EditorGUI.BeginChangeCheck();
             float aHighlight = Shader.GetGlobalFloat(Properties.AdditionalHighlightLimit);
             aHighlight = EditorGUILayout.Slider(
-                GUIStyles.HighlightText, aHighlight, DefaultValues.HighlightRangeMin, DefaultValues.HighlightRangeMax);
+                GUIStyles.HighlightStepText, aHighlight, DefaultValues.HighlightStepRangeMin, DefaultValues.HighlightStepRangeMax);
             if (EditorGUI.EndChangeCheck())
             {
                 Shader.SetGlobalFloat(Properties.AdditionalHighlightLimit, aHighlight);
@@ -359,6 +365,16 @@ namespace ToonShading.Editor
             EditorGUI.indentLevel -= 2;
 
             EditorGUI.BeginChangeCheck();
+            float highlight = Shader.GetGlobalFloat(Properties.HighlightValue);
+            highlight = EditorGUILayout.Slider(
+                GUIStyles.HighlightText, highlight, DefaultValues.HighlightRangeMin, DefaultValues.HighlightRangeMax);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Shader.SetGlobalFloat(Properties.HighlightValue, highlight);
+                _globalHighlight.value = highlight;
+            }
+
+            EditorGUI.BeginChangeCheck();
             float midtone = Shader.GetGlobalFloat(Properties.MidtoneValue);
             midtone = EditorGUILayout.Slider(
                 GUIStyles.MidToneText, midtone, DefaultValues.MidtoneRangeMin, DefaultValues.MidtoneRangeMax);
@@ -366,7 +382,17 @@ namespace ToonShading.Editor
             {
                 Shader.SetGlobalFloat(Properties.MidtoneValue, midtone);
                 _globalMidtone.value = midtone;
-            }            
+            }
+
+            EditorGUI.BeginChangeCheck();
+            float shadow = Shader.GetGlobalFloat(Properties.ShadowValue);
+            shadow = EditorGUILayout.Slider(
+                GUIStyles.ShadowText, shadow, DefaultValues.ShadowRangeMin, DefaultValues.ShadowRangeMax);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Shader.SetGlobalFloat(Properties.ShadowValue, shadow);
+                _globalShadow.value = shadow;
+            }
 
             if (receiveShadowsProp != null)
             {
@@ -715,11 +741,11 @@ namespace ToonShading.Editor
             bool alphaClip = material.GetFloat(Properties.AlphaClip) == 1;
             if (alphaClip)
             {
-                material.EnableKeyword(Keywords._ALPHATEST_ON);
+                material.EnableKeyword(Keywords.AlphaTestOn);
             }
             else
             {
-                material.DisableKeyword(Keywords._ALPHATEST_ON);
+                material.DisableKeyword(Keywords.AlphaTestOn);
             }
 
             var queueOffset = 0; // queueOffsetRange;
@@ -744,7 +770,7 @@ namespace ToonShading.Editor
             // Receive Shadows
             if (material.HasProperty(Properties.ReceiveShadows))
             {
-                CoreUtils.SetKeyword(material, Keywords._RECEIVE_SHADOWS_OFF, material.GetFloat(Properties.ReceiveShadows) == 0.0f);
+                CoreUtils.SetKeyword(material, Keywords.ReceiveShadowsOff, material.GetFloat(Properties.ReceiveShadows) == 0.0f);
             }
             // Emission
             if (material.HasProperty(Properties.EmissionColor))
@@ -752,11 +778,11 @@ namespace ToonShading.Editor
                 MaterialEditor.FixupEmissiveFlag(material);
             }
             bool shouldEmissionBeEnabled = (material.globalIlluminationFlags & MaterialGlobalIlluminationFlags.EmissiveIsBlack) == 0;
-            CoreUtils.SetKeyword(material, Keywords._EMISSION, shouldEmissionBeEnabled);
+            CoreUtils.SetKeyword(material, Keywords.Emission, shouldEmissionBeEnabled);
             // Normal Map
             if (material.HasProperty(Properties.BumpMap))
             {
-                CoreUtils.SetKeyword(material, Keywords._NORMALMAP, material.GetTexture(Properties.BumpMap));
+                CoreUtils.SetKeyword(material, Keywords.NormalMap, material.GetTexture(Properties.BumpMap));
             }
 
             // Mask map
@@ -764,27 +790,27 @@ namespace ToonShading.Editor
             if (material.HasProperty(Properties.ToonMask))
             {
                 maskMap = material.GetTexture(Properties.ToonMask);
-                CoreUtils.SetKeyword(material, Keywords._MASKMAP, maskMap);
+                CoreUtils.SetKeyword(material, Keywords.MaskMap, maskMap);
             }
 
             if (material.HasProperty(Properties.FillSpecular))
             {
-                CoreUtils.SetKeyword(material, Keywords._FILLMASK_SPECULAR, maskMap && material.GetFloat(Properties.FillSpecular) == 1.0f);
+                CoreUtils.SetKeyword(material, Keywords.FillMaskSpecular, maskMap && material.GetFloat(Properties.FillSpecular) == 1.0f);
             }
 
             if (material.HasProperty(Properties.FillOcclusion))
             {
-                CoreUtils.SetKeyword(material, Keywords._FILLMASK_OCCLUSION, maskMap && material.GetFloat(Properties.FillOcclusion) == 1.0f);
+                CoreUtils.SetKeyword(material, Keywords.FillMaskOcclusion, maskMap && material.GetFloat(Properties.FillOcclusion) == 1.0f);
             }
 
             if (material.HasProperty(Properties.FillEmission))
             {
-                CoreUtils.SetKeyword(material, Keywords._FILLMASK_EMISSION, maskMap && material.GetFloat(Properties.FillEmission) == 1.0f);
+                CoreUtils.SetKeyword(material, Keywords.FillMaskEmission, maskMap && material.GetFloat(Properties.FillEmission) == 1.0f);
             }
 
             if (material.HasProperty(Properties.FillSmoothness))
             {
-                CoreUtils.SetKeyword(material, Keywords._FILLMASK_SMOOTHNESS, maskMap && material.GetFloat(Properties.FillSmoothness) == 1.0f);
+                CoreUtils.SetKeyword(material, Keywords.FillMaskSmoothness, maskMap && material.GetFloat(Properties.FillSmoothness) == 1.0f);
             }
 
             // Specular
@@ -792,22 +818,22 @@ namespace ToonShading.Editor
             if (material.HasProperty(Properties.Specular))
             {
                 specular = material.GetFloat(Properties.Specular) == 1.0f;
-                CoreUtils.SetKeyword(material, Keywords._SPECULAR_OFF, !specular);
+                CoreUtils.SetKeyword(material, Keywords.SpecularOff, !specular);
             }
             // Specular Texture
             if (material.HasProperty(Properties.SpecTexMap))
             {
-                CoreUtils.SetKeyword(material, Keywords._SPECTEXMAP, material.GetTexture(Properties.SpecTexMap) && specular);
+                CoreUtils.SetKeyword(material, Keywords.SpecularMap, material.GetTexture(Properties.SpecTexMap) && specular);
             }
 
             if (material.HasProperty(Properties.Backlight))
             {
-                CoreUtils.SetKeyword(material, Keywords._BACKLIGHT_OFF, material.GetFloat(Properties.Backlight) == 0.0f || alphaClip);
+                CoreUtils.SetKeyword(material, Keywords.BacklightOff, material.GetFloat(Properties.Backlight) == 0.0f || alphaClip);
             }
 
             if (material.HasProperty(Properties.EdgeShine))
             {
-                CoreUtils.SetKeyword(material, Keywords._EDGESHINE_OFF, material.GetFloat(Properties.EdgeShine) == 0.0f || alphaClip);
+                CoreUtils.SetKeyword(material, Keywords.EdgeShineOff, material.GetFloat(Properties.EdgeShine) == 0.0f || alphaClip);
             }
 
             // Outline
@@ -815,13 +841,13 @@ namespace ToonShading.Editor
             if (material.HasProperty(Properties.Outline))
             {
                 outline = material.GetFloat(Properties.Outline) == 1.0f;
-                CoreUtils.SetKeyword(material, Keywords._OUTLINE, outline);
+                CoreUtils.SetKeyword(material, Keywords.Outline, outline);
                 material.SetShaderPassEnabled(MaterialProperties.CustomPassTagId.name, outline);
             }
 
             if (material.HasProperty(Properties.OutlineFade))
             {
-                CoreUtils.SetKeyword(material, Keywords._OUTLINE_FADE, material.GetFloat(Properties.OutlineFade) == 1.0f && outline);
+                CoreUtils.SetKeyword(material, Keywords.OutlineFade, material.GetFloat(Properties.OutlineFade) == 1.0f && outline);
             }
         }
     }    

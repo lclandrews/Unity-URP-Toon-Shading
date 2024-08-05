@@ -50,6 +50,8 @@
         public const string AdditionalHighlightLimit = "_AdditionalHighlightLimit";
         public const string AdditionalEdgeSoftness = "_AdditionalEdgeSoftness";
 
+        public const string HighlightValue = "_HighlightValue";
         public const string MidtoneValue = "_MidtoneValue";
+        public const string ShadowValue = "_ShadowValue";
     }
 }

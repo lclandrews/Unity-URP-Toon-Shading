@@ -7,19 +7,12 @@
 // Lighting Helpers
 // -------------------------------------
 
-half GetSmoothStepAttenuation(float attenuation, half shadowEdge, half lightEdge, half midTone, half edgeSoftness)
+half GetSmoothStepShading(half NdotL, half attenuation, half shadowEdge, half lightEdge, half highlight, half midtone, half shadow, half edgeSoftness)
 {
-    half highlight = smoothstep(lightEdge, lightEdge + edgeSoftness, attenuation);
-    half mid = smoothstep(0.0, shadowEdge, attenuation);
-    return (mid * midTone) + (highlight * (1.0 - midTone));
-}
-
-half GetSmoothStepShading(half NdotL, half shadowAttenuation, half shadowEdge, half lightEdge, half midTone, half edgeSoftness)
-{
-    half a = min(Remap(NdotL, half2(-0.5, 1.0), half2(0.0, 1.0)), shadowAttenuation);
-    half highlight = smoothstep(lightEdge, lightEdge + edgeSoftness, a);
+    half a = min(Remap(NdotL, half2(-0.5, 1.0), half2(0.0, 1.0)), attenuation);
+    half high = smoothstep(lightEdge, lightEdge + edgeSoftness, a);
     half mid = smoothstep(shadowEdge, shadowEdge + edgeSoftness, a);
-    return (mid * midTone) + (highlight * (1.0 - midTone));
+    return shadow + (mid * (midtone - shadow)) + (high * (highlight - midtone));
 }
 
 half3 ToonDirectSpecular(half3 lightColor, half3 lightDir, half3 normal, half3 viewDir, half3 specular, half smoothnessExp)
@@ -107,7 +100,7 @@ half3 ToonLightSpecular(half3 lightDir, half3 attenuatedLightColor, half3 normal
     return step(0.01, sV) * specular * attenuatedLightColor;
 }
 
-half3 ToonVertexLighting(float3 positionWS, half3 normalWS, half shadowLimit, half highlightLimit, half edgeSoftness, half midtoneValue)
+half3 ToonVertexLighting(float3 positionWS, half3 normalWS, half shadowLimit, half highlightLimit, half edgeSoftness)
 {
     half3 vertexLightColor = half3(0.0, 0.0, 0.0);
 #ifdef _ADDITIONAL_LIGHTS_VERTEX
@@ -122,7 +115,7 @@ half3 ToonVertexLighting(float3 positionWS, half3 normalWS, half shadowLimit, ha
 #endif
     {
         half NdotL = dot(normalWS, light.direction);
-        half rampedLight = GetSmoothStepShading(NdotL, light.distanceAttenuation, shadowLimit, highlightLimit, midtoneValue, edgeSoftness);
+        half rampedLight = GetSmoothStepShading(NdotL, light.distanceAttenuation, shadowLimit, highlightLimit, _HighlightValue, _MidtoneValue, _ShadowValue, edgeSoftness);
         vertexLightColor += rampedLight * light.color;
     }
 
@@ -132,11 +125,11 @@ half3 ToonVertexLighting(float3 positionWS, half3 normalWS, half shadowLimit, ha
 }
 
 half3 CalculateToonLighting(Light light, ToonInputData inputData, ToonSurfaceData surfaceData, half saturatedViewDotNormal, half smoothness, half specular,
-    half shadowLimit, half highlightLimit, half edgeSoftness, half midtoneValue)
+    half shadowLimit, half highlightLimit, half edgeSoftness)
 {
     half NdotL = dot(inputData.normalWS, light.direction);
-    half rampedLight = GetSmoothStepShading(NdotL, light.distanceAttenuation, shadowLimit, highlightLimit, midtoneValue, edgeSoftness);
-    rampedLight *= light.shadowAttenuation;
+    half rampedLight = GetSmoothStepShading(NdotL, light.distanceAttenuation * light.shadowAttenuation, shadowLimit, highlightLimit, _HighlightValue, _MidtoneValue, _ShadowValue, edgeSoftness);    
+    //rampedLight *= shadowAttenuation;
 
 #ifndef _BACKLIGHT_OFF
     half3 lightDiffuseColor = max(rampedLight, ToonHardBacklight(inputData.cameraDirWS, light.direction, _BacklightStrength, saturatedViewDotNormal)) * light.color;

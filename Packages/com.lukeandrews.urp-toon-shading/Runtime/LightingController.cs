@@ -8,8 +8,8 @@ namespace ToonShading
         // Main Light
         // -------------------------------------
         [SerializeField]
-        [Range(DefaultValues.ShadowRangeMin, DefaultValues.ShadowRangeMax)]
-        private float m_MainShadow = DefaultValues.ShadowDefault;
+        [Range(DefaultValues.ShadowStepRangeMin, DefaultValues.ShadowStepRangeMax)]
+        private float m_MainShadow = DefaultValues.ShadowStepDefault;
         public float MainShadow
         {
             get { return _mainShadow; }
@@ -19,11 +19,11 @@ namespace ToonShading
                 Shader.SetGlobalFloat(Properties.MainShadowLimit, _mainShadow);
             }
         }
-        private float _mainShadow = DefaultValues.ShadowDefault;
+        private float _mainShadow = DefaultValues.ShadowStepDefault;
 
         [SerializeField]
-        [Range(DefaultValues.HighlightRangeMin, DefaultValues.HighlightRangeMax)]
-        private float m_MainHighlight = DefaultValues.HighlightDefault;
+        [Range(DefaultValues.HighlightStepRangeMin, DefaultValues.HighlightStepRangeMax)]
+        private float m_MainHighlight = DefaultValues.HighlightStepDefault;
         public float MainHighlight
         {
             get { return _mainHighlight; }
@@ -33,7 +33,7 @@ namespace ToonShading
                 Shader.SetGlobalFloat(Properties.MainHighlightLimit, _mainHighlight);
             }
         }
-        private float _mainHighlight = DefaultValues.HighlightDefault;
+        private float _mainHighlight = DefaultValues.HighlightStepDefault;
 
         [SerializeField]
         [Range(DefaultValues.EdgeRangeMin, DefaultValues.EdgeRangeMax)]
@@ -53,8 +53,8 @@ namespace ToonShading
         // Additional Light
         // -------------------------------------
         [SerializeField]
-        [Range(DefaultValues.ShadowRangeMin, DefaultValues.ShadowRangeMax)]
-        private float m_AdditionalShadow = DefaultValues.ShadowDefault;
+        [Range(DefaultValues.ShadowStepRangeMin, DefaultValues.ShadowStepRangeMax)]
+        private float m_AdditionalShadow = DefaultValues.ShadowStepDefault;
         public float AdditionalShadow
         {
             get { return _additionalShadow; }
@@ -64,11 +64,11 @@ namespace ToonShading
                 Shader.SetGlobalFloat(Properties.AdditionalShadowLimit, _additionalShadow);
             }
         }
-        private float _additionalShadow = DefaultValues.ShadowDefault;
+        private float _additionalShadow = DefaultValues.ShadowStepDefault;
 
         [SerializeField]
-        [Range(DefaultValues.HighlightRangeMin, DefaultValues.HighlightRangeMax)]
-        private float m_AdditionalHighlight = DefaultValues.HighlightDefault;
+        [Range(DefaultValues.HighlightStepRangeMin, DefaultValues.HighlightStepRangeMax)]
+        private float m_AdditionalHighlight = DefaultValues.HighlightStepDefault;
         public float AdditionalHighlight
         {
             get { return _additionalHighlight; }
@@ -78,7 +78,7 @@ namespace ToonShading
                 Shader.SetGlobalFloat(Properties.AdditionalHighlightLimit, _additionalHighlight);
             }
         }
-        private float _additionalHighlight = DefaultValues.HighlightDefault;
+        private float _additionalHighlight = DefaultValues.HighlightStepDefault;
 
         [SerializeField]
         [Range(DefaultValues.EdgeRangeMin, DefaultValues.EdgeRangeMax)]
@@ -95,8 +95,22 @@ namespace ToonShading
         private float _additionalEdgeSoftness = DefaultValues.EdgeDefault;
 
         // -------------------------------------
-        // Midtone
+        // Highlights, Midtone & Shadows
         // -------------------------------------
+        [SerializeField]
+        [Range(DefaultValues.HighlightRangeMin, DefaultValues.HighlightRangeMax)]
+        private float m_HighlightValue = DefaultValues.HighlightDefault;
+        public float HighlightValue
+        {
+            get { return _highlightValue; }
+            set
+            {
+                _highlightValue = value;
+                Shader.SetGlobalFloat(Properties.HighlightValue, _highlightValue);
+            }
+        }
+        private float _highlightValue = DefaultValues.HighlightDefault;
+
         [SerializeField]
         [Range(DefaultValues.MidtoneRangeMin, DefaultValues.MidtoneRangeMax)]
         private float m_MidtoneValue = DefaultValues.MidtoneDefault;
@@ -110,6 +124,20 @@ namespace ToonShading
             }
         }
         private float _midtoneValue = DefaultValues.MidtoneDefault;
+
+        [SerializeField]
+        [Range(DefaultValues.ShadowRangeMin, DefaultValues.ShadowRangeMax)]
+        private float m_ShadowValue = DefaultValues.ShadowDefault;
+        public float ShadowValue
+        {
+            get { return _shadowValue; }
+            set
+            {
+                _shadowValue = value;
+                Shader.SetGlobalFloat(Properties.ShadowValue, _shadowValue);
+            }
+        }
+        private float _shadowValue = DefaultValues.ShadowDefault;
 
         void Awake()
         {
@@ -148,9 +176,19 @@ namespace ToonShading
                 AdditionalEdgeSoftness = m_AdditionalEdgeSoftness;
             }
 
+            if (_highlightValue != m_HighlightValue)
+            {
+                HighlightValue = m_HighlightValue;
+            }
+
             if (_midtoneValue != m_MidtoneValue)
             {
                 MidtoneValue = m_MidtoneValue;
+            }
+
+            if (_shadowValue != m_ShadowValue)
+            {
+                ShadowValue = m_ShadowValue;
             }
         }
 
@@ -162,11 +200,13 @@ namespace ToonShading
             AdditionalShadow = m_AdditionalShadow;
             AdditionalHighlight = m_AdditionalHighlight;
             AdditionalEdgeSoftness = m_AdditionalEdgeSoftness;
+            HighlightValue = m_HighlightValue;
             MidtoneValue = m_MidtoneValue;
+            ShadowValue = m_ShadowValue;
         }
 
         public void ApplyControllerSettings(float mainShadow, float mainHighlight, float mainEdgeSoftness, float additionalShadow, float additionalHighlight,
-            float additionalEdgeSoftness, float midTone)
+            float additionalEdgeSoftness, float highlight, float midTone, float shadow)
         {
             m_MainShadow = mainShadow;
             m_MainHighlight = mainHighlight;
@@ -174,7 +214,9 @@ namespace ToonShading
             m_AdditionalShadow = additionalShadow;
             m_AdditionalHighlight = additionalHighlight;
             m_AdditionalEdgeSoftness = additionalEdgeSoftness;
+            m_HighlightValue = highlight;
             m_MidtoneValue = midTone;
+            m_ShadowValue = shadow;
             ApplyControllerSettings();
         }
     }
