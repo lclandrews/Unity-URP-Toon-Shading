@@ -110,13 +110,11 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
                 _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
     }
     LIGHT_LOOP_END
-#endif
+#endif // End defined(_ADDITIONAL_LIGHTS)
 
 #if defined(_ADDITIONAL_LIGHTS_VERTEX)
     lightingData.vertexLightingColor += inputData.vertexLighting * surfaceData.albedo;
-    outColor.rgb = lightingData.vertexLightingColor;
-    return;
-#endif // End defined(_ADDITIONAL_LIGHTS)
+#endif 
 
     half4 color = CalculateFinalColor(lightingData, surfaceData.alpha);
     
