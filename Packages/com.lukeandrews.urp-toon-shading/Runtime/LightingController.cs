@@ -148,12 +148,12 @@ namespace ToonShading
         {
             if (_mainShadow != m_MainShadow)
             {
-                MainShadow = _mainShadow;
+                MainShadow = m_MainShadow;
             }
 
             if (_mainHighlight != m_MainHighlight)
             {
-                MainHighlight = _mainHighlight;
+                MainHighlight = m_MainHighlight;
             }
 
             if (_mainEdgeSoftness != m_MainEdgeSoftness)
