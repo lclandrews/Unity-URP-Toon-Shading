@@ -239,79 +239,79 @@
             ENDHLSL
         }
 
-        Pass
-        {
-            Name "GBuffer"
-            Tags
-            {
-                "LightMode" = "UniversalGBuffer"
-            }
+        // Pass
+        // {
+        //     Name "GBuffer"
+        //     Tags
+        //     {
+        //         "LightMode" = "UniversalGBuffer"
+        //     }
 
-            // -------------------------------------
-            // Render State Commands
-            ZWrite[_ZWrite]
-            ZTest LEqual
-            Cull[_Cull]
+        //     // -------------------------------------
+        //     // Render State Commands
+        //     ZWrite[_ZWrite]
+        //     ZTest LEqual
+        //     Cull[_Cull]
 
-            HLSLPROGRAM
-            #pragma target 4.5
+        //     HLSLPROGRAM
+        //     #pragma target 4.5
 
-            // Deferred Rendering Path does not support the OpenGL-based graphics API:
-            // Desktop OpenGL, OpenGL ES 3.0, WebGL 2.0.
-            #pragma exclude_renderers gles3 glcore
+        //     // Deferred Rendering Path does not support the OpenGL-based graphics API:
+        //     // Desktop OpenGL, OpenGL ES 3.0, WebGL 2.0.
+        //     #pragma exclude_renderers gles3 glcore
 
-            // -------------------------------------
-            // Shader Stages
-            #pragma vertex LitPassVertexSimple
-            #pragma fragment LitPassFragmentSimple
+        //     // -------------------------------------
+        //     // Shader Stages
+        //     #pragma vertex LitPassVertexSimple
+        //     #pragma fragment LitPassFragmentSimple
 
-            // -------------------------------------
-            // Material Keywords
-            #pragma shader_feature_local_fragment _ALPHATEST_ON
-            //#pragma shader_feature _ALPHAPREMULTIPLY_ON
-            #pragma shader_feature_local_fragment _ _SPECGLOSSMAP _SPECULAR_COLOR
-            #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
-            #pragma shader_feature_local _NORMALMAP
-            #pragma shader_feature_local_fragment _EMISSION
-            #pragma shader_feature_local _RECEIVE_SHADOWS_OFF
+        //     // -------------------------------------
+        //     // Material Keywords
+        //     #pragma shader_feature_local_fragment _ALPHATEST_ON
+        //     //#pragma shader_feature _ALPHAPREMULTIPLY_ON
+        //     #pragma shader_feature_local_fragment _ _SPECGLOSSMAP _SPECULAR_COLOR
+        //     #pragma shader_feature_local_fragment _GLOSSINESS_FROM_BASE_ALPHA
+        //     #pragma shader_feature_local _NORMALMAP
+        //     #pragma shader_feature_local_fragment _EMISSION
+        //     #pragma shader_feature_local _RECEIVE_SHADOWS_OFF
 
-            // -------------------------------------
-            // Universal Pipeline keywords
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
-            //#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
-            //#pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
-            #pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
-            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
+        //     // -------------------------------------
+        //     // Universal Pipeline keywords
+        //     #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+        //     //#pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+        //     //#pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
+        //     #pragma multi_compile_fragment _ _SHADOWS_SOFT
+        //     #pragma multi_compile_fragment _ _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+        //     #pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
+        //     #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
 
-            // -------------------------------------
-            // Unity defined keywords
-            #pragma multi_compile _ DIRLIGHTMAP_COMBINED
-            #pragma multi_compile _ LIGHTMAP_ON
-            #pragma multi_compile _ DYNAMICLIGHTMAP_ON
-            #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
-            #pragma multi_compile _ SHADOWS_SHADOWMASK
-            #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
-            #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
-            #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
+        //     // -------------------------------------
+        //     // Unity defined keywords
+        //     #pragma multi_compile _ DIRLIGHTMAP_COMBINED
+        //     #pragma multi_compile _ LIGHTMAP_ON
+        //     #pragma multi_compile _ DYNAMICLIGHTMAP_ON
+        //     #pragma multi_compile _ LIGHTMAP_SHADOW_MIXING
+        //     #pragma multi_compile _ SHADOWS_SHADOWMASK
+        //     #pragma multi_compile_fragment _ _GBUFFER_NORMALS_OCT
+        //     #pragma multi_compile_fragment _ _RENDER_PASS_ENABLED
+        //     #pragma multi_compile_fragment _ LOD_FADE_CROSSFADE
 
-            //--------------------------------------
-            // GPU Instancing
-            #pragma multi_compile_instancing
-            #pragma instancing_options renderinglayer
-            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+        //     //--------------------------------------
+        //     // GPU Instancing
+        //     #pragma multi_compile_instancing
+        //     #pragma instancing_options renderinglayer
+        //     #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
-            //--------------------------------------
-            // Defines
-            #define BUMP_SCALE_NOT_SUPPORTED 1
+        //     //--------------------------------------
+        //     // Defines
+        //     #define BUMP_SCALE_NOT_SUPPORTED 1
 
-            // -------------------------------------
-            // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitGBufferPass.hlsl"
-            ENDHLSL
-        }
+        //     // -------------------------------------
+        //     // Includes
+        //     #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+        //     #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitGBufferPass.hlsl"
+        //     ENDHLSL
+        // }
 
         Pass
         {
@@ -404,69 +404,69 @@
         }
 
         // This pass it not used during regular rendering, only for lightmap baking.
-        Pass
-        {
-            Name "Meta"
-            Tags
-            {
-                "LightMode" = "Meta"
-            }
+        // Pass
+        // {
+        //     Name "Meta"
+        //     Tags
+        //     {
+        //         "LightMode" = "Meta"
+        //     }
 
-            // -------------------------------------
-            // Render State Commands
-            Cull Off
+        //     // -------------------------------------
+        //     // Render State Commands
+        //     Cull Off
 
-            HLSLPROGRAM
-            #pragma target 2.0
+        //     HLSLPROGRAM
+        //     #pragma target 2.0
 
-            // -------------------------------------
-            // Shader Stages
-            #pragma vertex UniversalVertexMeta
-            #pragma fragment UniversalFragmentMetaSimple
+        //     // -------------------------------------
+        //     // Shader Stages
+        //     #pragma vertex UniversalVertexMeta
+        //     #pragma fragment UniversalFragmentMetaSimple
 
-            // -------------------------------------
-            // Material Keywords
-            #pragma shader_feature_local_fragment _EMISSION
-            #pragma shader_feature_local_fragment _SPECGLOSSMAP
-            #pragma shader_feature EDITOR_VISUALIZATION
+        //     // -------------------------------------
+        //     // Material Keywords
+        //     #pragma shader_feature_local_fragment _EMISSION
+        //     #pragma shader_feature_local_fragment _SPECGLOSSMAP
+        //     #pragma shader_feature EDITOR_VISUALIZATION
 
-            // -------------------------------------
-            // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
+        //     // -------------------------------------
+        //     // Includes
+        //     #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+        //     #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitMetaPass.hlsl"
 
-            ENDHLSL
-        }
+        //     ENDHLSL
+        // }
 
-        Pass
-        {
-            Name "Universal2D"
-            Tags
-            {
-                "LightMode" = "Universal2D"
-                "RenderType" = "Transparent"
-                "Queue" = "Transparent"
-            }
+        // Pass
+        // {
+        //     Name "Universal2D"
+        //     Tags
+        //     {
+        //         "LightMode" = "Universal2D"
+        //         "RenderType" = "Transparent"
+        //         "Queue" = "Transparent"
+        //     }
 
-            HLSLPROGRAM
-            #pragma target 2.0
+        //     HLSLPROGRAM
+        //     #pragma target 2.0
 
-            // -------------------------------------
-            // Shader Stages
-            #pragma vertex vert
-            #pragma fragment frag
+        //     // -------------------------------------
+        //     // Shader Stages
+        //     #pragma vertex vert
+        //     #pragma fragment frag
 
-            // -------------------------------------
-            // Material Keywords
-            #pragma shader_feature_local_fragment _ALPHATEST_ON
-            #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
+        //     // -------------------------------------
+        //     // Material Keywords
+        //     #pragma shader_feature_local_fragment _ALPHATEST_ON
+        //     #pragma shader_feature_local_fragment _ALPHAPREMULTIPLY_ON
 
-            // -------------------------------------
-            // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
-            ENDHLSL
-        }
+        //     // -------------------------------------
+        //     // Includes
+        //     #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+        //     #include "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Universal2D.hlsl"
+        //     ENDHLSL
+        // }
     }
 
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
