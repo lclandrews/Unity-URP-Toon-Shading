@@ -72,7 +72,7 @@ inline void InitToonInputData(Varyings input, half3 normalTS, out ToonInputData 
 
     inputData.positionWS = input.positionWS;
     inputData.cameraDirWS = 0;
-    inputData.tangentToWorld = half3x3(input.tangentWS, input.bitangentWS, input.uAndNormalWS.yzw)
+    inputData.tangentToWorld = half3x3(input.tangentWS, input.bitangentWS, input.uAndNormalWS.yzw);
     inputData.normalWS = TransformTangentToWorld(normalTS, inputData.tangentToWorld);
 #endif    
 
