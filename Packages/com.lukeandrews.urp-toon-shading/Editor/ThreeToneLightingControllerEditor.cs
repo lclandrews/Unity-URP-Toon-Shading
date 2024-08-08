@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace ToonShading.Editor
 {
-    [CustomEditor(typeof(LightingController))]
-    public class LightingControllerEditor : UnityEditor.Editor
+    [CustomEditor(typeof(ThreeToneLightingController))]
+    public class ThreeToneLightingControllerEditor : UnityEditor.Editor
     {
         private SavedFloat _globalMainShadow = null;
         private SavedFloat _globalMainHighlight = null;
@@ -26,22 +26,22 @@ namespace ToonShading.Editor
 
         void OnEnable()
         {
-            _globalMainShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainShadow), DefaultValues.ShadowStepDefault);
-            _globalMainHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainHighlight), DefaultValues.HighlightStepDefault);
-            _globalMainEdge = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.MainEdgeSoftness), DefaultValues.EdgeDefault);
+            _globalMainShadow = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.MainShadow), DefaultValues.ShadowStepDefault);
+            _globalMainHighlight = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.MainHighlight), DefaultValues.HighlightStepDefault);
+            _globalMainEdge = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.MainEdgeSoftness), DefaultValues.EdgeDefault);
 
-            _globalAddShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalShadow), DefaultValues.ShadowStepDefault);
-            _globalAddHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalHighlight), DefaultValues.HighlightStepDefault);
-            _globalAddEdge = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.AdditionalEdgeSoftness), DefaultValues.EdgeDefault);
+            _globalAddShadow = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.AdditionalShadow), DefaultValues.ShadowStepDefault);
+            _globalAddHighlight = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.AdditionalHighlight), DefaultValues.HighlightStepDefault);
+            _globalAddEdge = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.AdditionalEdgeSoftness), DefaultValues.EdgeDefault);
 
-            _globalHighlight = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Highlight), DefaultValues.HighlightDefault);
-            _globalMidtone = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Midtone), DefaultValues.MidtoneDefault);
-            _globalShadow = new SavedFloat(GUIHeaders.GetStateKey(GUIHeaders.Shadow), DefaultValues.ShadowDefault);
+            _globalHighlight = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.Highlight), DefaultValues.HighlightDefault);
+            _globalMidtone = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.Midtone), DefaultValues.MidtoneDefault);
+            _globalShadow = new SavedFloat(GUIHeaders.GetStateKey("ThreeTone", GUIHeaders.Shadow), DefaultValues.ShadowDefault);
         }
 
         public override void OnInspectorGUI()
         {
-            LightingController targetController = (LightingController)target;
+            ThreeToneLightingController targetController = (ThreeToneLightingController)target;
 
             DrawDefaultInspector();
 

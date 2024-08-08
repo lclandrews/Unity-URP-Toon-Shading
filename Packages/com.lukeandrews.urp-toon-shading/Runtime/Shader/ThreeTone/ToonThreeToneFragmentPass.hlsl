@@ -1,5 +1,5 @@
-#ifndef TOON_FRAG_PASS_INCLUDED
-#define TOON_FRAG_PASS_INCLUDED
+#ifndef TOON_THREE_TONE_FRAG_PASS_INCLUDED
+#define TOON_THREE_TONE_FRAG_PASS_INCLUDED
 
 #if defined(LOD_FADE_CROSSFADE)
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
@@ -8,7 +8,7 @@
 #include "ToonSurfaceData.hlsl"
 
 #include "Core/ToonURP.hlsl"
-#include "Core/ToonLighting.hlsl"
+#include "ToonThreeToneLighting.hlsl"
 
 void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
 #ifdef _WRITE_RENDERING_LAYERS
@@ -77,7 +77,7 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
     if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
 #endif
     {
-        lightingData.mainLightColor += CalculateToonLighting(mainLight, inputData, surfaceData, sVdotN, smoothness, specular,
+        lightingData.mainLightColor += CalculateToonThreeToneLighting(mainLight, inputData, surfaceData, sVdotN, smoothness, specular,
             _MainShadowLimit, _MainHighlightLimit, _MainEdgeSoftness);
     }
     
@@ -94,7 +94,7 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
 #endif
         {
-            lightingData.additionalLightsColor += CalculateToonLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
+            lightingData.additionalLightsColor += CalculateToonThreeToneAddLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
                     _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
         }
     }
@@ -106,7 +106,7 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
     if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
 #endif
     {
-        lightingData.additionalLightsColor += CalculateToonLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
+        lightingData.additionalLightsColor += CalculateToonThreeToneAddLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
                 _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
     }
     LIGHT_LOOP_END

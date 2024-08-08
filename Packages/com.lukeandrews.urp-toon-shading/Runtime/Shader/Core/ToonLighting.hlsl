@@ -7,12 +7,34 @@
 // Lighting Helpers
 // -------------------------------------
 
-half GetSmoothStepShading(half NdotL, half attenuation, half shadowEdge, half lightEdge, half highlight, half midtone, half shadow, half edgeSoftness)
+half GetTwoToneSmoothStepShading(half NdotL, half attenuation, half shadowEdge, half highlight, half shadow, half edgeSoftness)
+{
+    half a = min(Remap(NdotL, half2(-0.5, 1.0), half2(0.0, 1.0)), attenuation);
+    half high = smoothstep(shadowEdge, shadowEdge + edgeSoftness, a);
+    return shadow + (high * (highlight - shadow));
+}
+
+half GetTwoToneSmoothStepShading(half NdotL, half attenuation, half shadowEdge, half highlight, half edgeSoftness)
+{
+    half a = min(Remap(NdotL, half2(-0.5, 1.0), half2(0.0, 1.0)), attenuation);
+    half high = smoothstep(shadowEdge, shadowEdge + edgeSoftness, a);
+    return high * highlight;
+}
+
+half GetThreeToneSmoothStepShading(half NdotL, half attenuation, half shadowEdge, half lightEdge, half highlight, half midtone, half shadow, half edgeSoftness)
 {
     half a = min(Remap(NdotL, half2(-0.5, 1.0), half2(0.0, 1.0)), attenuation);
     half high = smoothstep(lightEdge, lightEdge + edgeSoftness, a);
     half mid = smoothstep(shadowEdge, shadowEdge + edgeSoftness, a);
     return shadow + (mid * (midtone - shadow)) + (high * (highlight - midtone));
+}
+
+half GetThreeToneSmoothStepShading(half NdotL, half attenuation, half shadowEdge, half lightEdge, half highlight, half midtone, half edgeSoftness)
+{
+    half a = min(Remap(NdotL, half2(-0.5, 1.0), half2(0.0, 1.0)), attenuation);
+    half high = smoothstep(lightEdge, lightEdge + edgeSoftness, a);
+    half mid = smoothstep(shadowEdge, shadowEdge + edgeSoftness, a);
+    return (mid * midtone) + (high * (highlight - midtone));
 }
 
 half3 ToonDirectSpecular(half3 lightColor, half3 lightDir, half3 normal, half3 viewDir, half3 specular, half smoothnessExp)
@@ -98,50 +120,6 @@ half3 ToonLightSpecular(half3 lightDir, half3 attenuatedLightColor, half3 normal
     half sV = RGBValue(attenuatedLightColor) * specularValue * ToonDirectSpecularValue(lightDir, normalWS, viewDir, smoothnessExp);
     sV *= specularTexture;
     return step(0.01, sV) * specular * attenuatedLightColor;
-}
-
-half3 ToonVertexLighting(float3 positionWS, half3 normalWS, half shadowLimit, half highlightLimit, half edgeSoftness)
-{
-    half3 vertexLightColor = half3(0.0, 0.0, 0.0);
-#ifdef _ADDITIONAL_LIGHTS_VERTEX
-    uint lightsCount = GetAdditionalLightsCount();
-    uint meshRenderingLayers = GetMeshRenderingLayer();
-
-    LIGHT_LOOP_BEGIN(lightsCount)
-    Light light = GetAdditionalLight(lightIndex, positionWS);
-
-#ifdef _LIGHT_LAYERS
-    if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
-#endif
-    {
-        half NdotL = dot(normalWS, light.direction);
-        half rampedLight = GetSmoothStepShading(NdotL, light.distanceAttenuation, shadowLimit, highlightLimit, _HighlightValue, _MidtoneValue, _ShadowValue, edgeSoftness);
-        vertexLightColor += rampedLight * light.color;
-    }
-
-    LIGHT_LOOP_END
-#endif
-    return vertexLightColor;
-}
-
-half3 CalculateToonLighting(Light light, ToonInputData inputData, ToonSurfaceData surfaceData, half saturatedViewDotNormal, half smoothness, half specular,
-    half shadowLimit, half highlightLimit, half edgeSoftness)
-{
-    half NdotL = dot(inputData.normalWS, light.direction);
-    half rampedLight = GetSmoothStepShading(NdotL, light.distanceAttenuation * light.shadowAttenuation, shadowLimit, highlightLimit, _HighlightValue, _MidtoneValue, _ShadowValue, edgeSoftness);    
-    //rampedLight *= shadowAttenuation;
-
-#ifndef _BACKLIGHT_OFF
-    half3 lightDiffuseColor = max(rampedLight, ToonHardBacklight(inputData.cameraDirWS, light.direction, _BacklightStrength, saturatedViewDotNormal)) * light.color;
-#else
-    half3 lightDiffuseColor = rampedLight * light.color;
-#endif    
-    lightDiffuseColor *= surfaceData.albedo;
-#ifndef _SPECULAR_OFF
-    lightDiffuseColor += ToonLightSpecular(light.direction, light.color, inputData.normalWS, inputData.viewDirectionWS,
-        surfaceData.specular, specular, surfaceData.specularTexture, smoothness);
-#endif
-    return lightDiffuseColor;
 }
 
 #endif

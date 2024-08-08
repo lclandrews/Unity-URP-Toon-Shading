@@ -7,12 +7,17 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ExampleMaterial
-  m_Shader: {fileID: 4800000, guid: 8d4b0dc4b7a932f42aac856b7d18c011, type: 3}
+  m_Name: ExampleTwoTone
+  m_Shader: {fileID: 4800000, guid: 2d5cdfee587843d419125b323badc34c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _FILLMASK_EMISSION
+  - _FILLMASK_SMOOTHNESS
+  - _FILLMASK_SPECULAR
+  - _MASKMAP
   - _OUTLINE
+  - _SPECTEXMAP
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
@@ -70,11 +75,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecTexMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: cdd95f78556c2ec49964dca6c79c8243, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ToonMask:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -93,7 +98,7 @@ Material:
     - _EdgeShine: 1
     - _EnvironmentReflections: 1
     - _FillEmission: 1
-    - _FillOcclusion: 1
+    - _FillOcclusion: 0
     - _FillSmoothness: 1
     - _FillSpecular: 1
     - _GlossMapScale: 0

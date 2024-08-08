@@ -1,4 +1,4 @@
-﻿Shader "Universal Render Pipeline/Toon"
+﻿Shader "Universal Render Pipeline/Toon Three Tone"
 {
     Properties
     {        
@@ -182,9 +182,9 @@
 
             // -------------------------------------
             // Includes
-            #include "ToonInput.hlsl"
-            #include "ToonVertexPass.hlsl"
-            #include "ToonFragmentPass.hlsl"
+            #include "ThreeTone/ToonThreeToneInput.hlsl"
+            #include "ThreeTone/ToonThreeToneVertexPass.hlsl"
+            #include "ThreeTone/ToonThreeToneFragmentPass.hlsl"
 
             #pragma vertex ToonPassVertex
             #pragma fragment ToonPassFragment            
@@ -470,5 +470,5 @@
     }
 
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "ToonShading.Editor.ToonShaderGUI"
+    CustomEditor "ToonShading.Editor.ToonThreeToneShaderGUI"
 }

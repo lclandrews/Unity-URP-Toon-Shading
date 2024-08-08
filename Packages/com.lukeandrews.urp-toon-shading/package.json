@@ -1,6 +1,6 @@
 {
   "name": "com.lukeandrews.urp-toon-shading",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "displayName": "URP Toon Shading",
   "description": "A library of shaders to render objects in a toon style.",
   "unity": "2022.3",

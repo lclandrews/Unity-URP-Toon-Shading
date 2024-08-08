@@ -1,5 +1,5 @@
-#ifndef TOON_VERT_PASS_INCLUDED
-#define TOON_VERT_PASS_INCLUDED
+#ifndef TOON_TWO_TONE_VERT_PASS_INCLUDED
+#define TOON_TWO_TONE_VERT_PASS_INCLUDED
 
 struct Attributes
 {
@@ -67,7 +67,7 @@ struct Varyings
 #include "ToonInputData.hlsl"
 #include "ToonSurfaceData.hlsl"
 #include "Core/ToonHelpers.hlsl"
-#include "Core/ToonLighting.hlsl"
+#include "ToonTwoToneLighting.hlsl"
 
 Varyings ToonPassVertex(Attributes input)
 {
@@ -128,7 +128,7 @@ Varyings ToonPassVertex(Attributes input)
 
 #ifdef _ADDITIONAL_LIGHTS_VERTEX
     output.vertexLight = 
-        ToonVertexLighting(vertexPositionWS, normalInput.normalWS, _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
+        ToonTwoToneVertexLighting(vertexPositionWS, normalInput.normalWS, _AdditionalShadowLimit, _AdditionalEdgeSoftness);
 #endif
     TOON_OUTPUT_FOG(output.staticLightmapUvAndFog, output.vertexSHAndFog, fogFactor);
 

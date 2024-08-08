@@ -6,18 +6,6 @@
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 
-half _MainShadowLimit;
-half _MainHighlightLimit;
-half _MainEdgeSoftness;
-
-half _AdditionalShadowLimit;
-half _AdditionalHighlightLimit;
-half _AdditionalEdgeSoftness;
-
-half _HighlightValue;
-half _MidtoneValue;
-half _ShadowValue;
-
 CBUFFER_START(UnityPerMaterial)
 float4 _BaseMap_ST;
 half4 _BaseColor;

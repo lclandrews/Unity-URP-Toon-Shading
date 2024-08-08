@@ -22,9 +22,9 @@
         public const string Midtone = "GlobalMidtone";
         public const string Shadow = "GlobalShadow";
 
-        public static string GetStateKey(string header)
+        public static string GetStateKey(string variant, string header)
         {
-            return $"{_uiKeyPrefix}.{header}";
+            return $"{_uiKeyPrefix}:{variant}.{header}";
         }
     }
 }
