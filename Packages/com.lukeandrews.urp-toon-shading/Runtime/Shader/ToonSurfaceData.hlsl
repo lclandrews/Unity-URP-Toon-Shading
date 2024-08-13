@@ -22,7 +22,7 @@ inline void InitToonSurfaceData(float2 uv, out ToonSurfaceData outData)
     outData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff);
     outData.normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
     half4 maskValues = SampleToonMask(uv, TEXTURE2D_ARGS(_ToonMask, sampler_ToonMask));
-    outData.specular = SampleSpecular(maskValues.r, _SpecColor, outData.albedo);
+    outData.specular = SampleSpecular(maskValues.r, _SpecColor);
     outData.smoothness = maskValues.a * _Smoothness;
     float2 texUV = RotateUV(uv, half2(0.5, 0.5), _SpecTexRot);
     outData.specularTexture = SampleSpecularTexture(texUV * _SpecTexTile, TEXTURE2D_ARGS(_SpecTexMap, sampler_SpecTexMap));    

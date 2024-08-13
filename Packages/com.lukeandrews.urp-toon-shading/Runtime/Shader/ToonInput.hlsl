@@ -53,9 +53,9 @@ half4 SampleAlbedoAlpha(float2 uv, TEXTURE2D_PARAM(albedoAlphaMap, sampler_albed
     return SAMPLE_TEXTURE2D(albedoAlphaMap, sampler_albedoAlphaMap, uv);
 }
 
-half3 SampleSpecular(half specularMap, half3 specularColor, half3 albedo)
+half3 SampleSpecular(half specularMap, half3 specularColor)
 {
-    half3 spec = specularMap * albedo * specularColor;
+    half3 spec = specularMap * specularColor;
     return spec;
 }
 
