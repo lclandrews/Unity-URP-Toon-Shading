@@ -24,8 +24,11 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
     ToonSurfaceData surfaceData;
     InitToonSurfaceData(uv, surfaceData);  
     
-    half3 colorMask = SampleColorMask(uv, TEXTURE2D_ARGS(_ColorMaskMap, sampler_ColorMaskMap), _ColorMaskRColor, _ColorMaskGColor, _ColorMaskBColor, _ColorMaskAColor);
-    surfaceData.albedo.xyz = surfaceData.albedo.xyz * colorMask;
+    half4 colorMask = SampleColorMask(uv, TEXTURE2D_ARGS(_ColorMaskMap, sampler_ColorMaskMap), _ColorMaskRColor, _ColorMaskGColor, _ColorMaskBColor, _ColorMaskAColor);
+    surfaceData.albedo = lerp(surfaceData.albedo, surfaceData.albedo * _ColorMaskRColor, colorMask.r);
+    surfaceData.albedo = lerp(surfaceData.albedo, surfaceData.albedo * _ColorMaskGColor, colorMask.g);
+    surfaceData.albedo = lerp(surfaceData.albedo, surfaceData.albedo * _ColorMaskBColor, colorMask.b);
+    surfaceData.albedo = lerp(surfaceData.albedo, surfaceData.albedo * _ColorMaskAColor, colorMask.a);
     
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);
