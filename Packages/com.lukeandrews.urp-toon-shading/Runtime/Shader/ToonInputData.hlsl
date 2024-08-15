@@ -124,9 +124,9 @@ inline void InitToonInputData(Varyings input, half3 normalTS, out ToonInputData 
     inputData.dynamicLightmapUV = input.dynamicLightmapUV.xy;
 #endif
 #if defined(LIGHTMAP_ON)
-    inputData.staticLightmapUV = input.staticLightmapUV;
+    inputData.staticLightmapUV = input.staticLightmapUvAndFog.xy;
 #else
-    inputData.vertexSH = input.vertexSH;
+    inputData.vertexSH = input.vertexSHAndFog.xyz;
 #endif
 #endif
 };

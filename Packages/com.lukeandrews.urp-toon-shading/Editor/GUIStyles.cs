@@ -117,5 +117,20 @@ namespace ToonShading.Editor
 
         public static readonly GUIContent OutlineOffsetZ = new GUIContent("Depth Offset",
             "Offsets the outline in the depth (Z) direction of the camera.");
+
+        public static GUIContent ColorMaskMapText = new GUIContent("Color Mask Map",
+            "A mask map for specifying different colorized regions.");
+
+        public static GUIContent ColorMaskRColor = new GUIContent("Color Mask (R) Color",
+            "The color mapped to the (R) channel of the color mask map.");
+
+        public static GUIContent ColorMaskGColor = new GUIContent("Color Mask (G) Color",
+            "The color mapped to the (G) channel of the color mask map.");
+
+        public static GUIContent ColorMaskBColor = new GUIContent("Color Mask (B) Color",
+            "The color mapped to the (B) channel of the color mask map.");
+
+        public static GUIContent ColorMaskAColor = new GUIContent("Color Mask (A) Color",
+            "The color mapped to the (A) channel of the color mask map.");
     }
 }

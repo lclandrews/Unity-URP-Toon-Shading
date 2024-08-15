@@ -1,5 +1,5 @@
-#ifndef TOON_THREE_TONE_FRAG_PASS_INCLUDED
-#define TOON_THREE_TONE_FRAG_PASS_INCLUDED
+#ifndef TOON_TWO_TONE_COLOR_MASK_FRAG_PASS_INCLUDED
+#define TOON_TWO_TONE_COLOR_MASK_FRAG_PASS_INCLUDED
 
 #if defined(LOD_FADE_CROSSFADE)
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
@@ -8,7 +8,7 @@
 #include "ToonSurfaceData.hlsl"
 
 #include "Core/ToonURP.hlsl"
-#include "ToonThreeToneLighting.hlsl"
+#include "ToonTwoToneLighting.hlsl"
 
 void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
 #ifdef _WRITE_RENDERING_LAYERS
@@ -22,8 +22,11 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
     float2 uv = float2(input.uAndNormalWS.x, input.vAndViewDirWS.x);
 
     ToonSurfaceData surfaceData;
-    InitToonSurfaceData(uv, surfaceData);    
-
+    InitToonSurfaceData(uv, surfaceData);  
+    
+    half3 colorMask = SampleColorMask(uv, TEXTURE2D_ARGS(_ColorMaskMap, sampler_ColorMaskMap), _ColorMaskRColor, _ColorMaskGColor, _ColorMaskBColor, _ColorMaskAColor);
+    surfaceData.albedo.xyz = surfaceData.albedo.xyz * colorMask;
+    
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);
 #endif
@@ -78,8 +81,8 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
     if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
 #endif
     {
-        lightingData.mainLightColor += CalculateToonThreeToneLighting(mainLight, inputData, surfaceData, sVdotN, smoothness, specular,
-            _MainShadowLimit, _MainHighlightLimit, _MainEdgeSoftness);
+        lightingData.mainLightColor += CalculateToonTwoToneLighting(mainLight, inputData, surfaceData, sVdotN, smoothness, specular,
+            _MainShadowLimit, _MainEdgeSoftness);
     }
     
 #if defined(_ADDITIONAL_LIGHTS)
@@ -95,8 +98,8 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
 #endif
         {
-            lightingData.additionalLightsColor += CalculateToonThreeToneAddLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
-                    _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
+            lightingData.additionalLightsColor += CalculateToonTwoToneAddLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
+                    _AdditionalShadowLimit, _AdditionalEdgeSoftness);
         }
     }
 #endif // End USE_FORWARD_PLUS
@@ -107,8 +110,8 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
     if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
 #endif
     {
-        lightingData.additionalLightsColor += CalculateToonThreeToneAddLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
-                _AdditionalShadowLimit, _AdditionalHighlightLimit, _AdditionalEdgeSoftness);
+        lightingData.additionalLightsColor += CalculateToonTwoToneAddLighting(light, inputData, surfaceData, sVdotN, smoothness, specular, 
+                _AdditionalShadowLimit, _AdditionalEdgeSoftness);
     }
     LIGHT_LOOP_END
 #endif // End defined(_ADDITIONAL_LIGHTS)

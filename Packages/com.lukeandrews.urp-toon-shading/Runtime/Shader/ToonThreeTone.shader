@@ -93,7 +93,7 @@
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "ToonInput.hlsl"
+            #include "ThreeTone/ToonThreeToneInput.hlsl"
             #include "ToonOutlinePass.hlsl"
 
             #pragma vertex ToonOutlinePassVertex
@@ -234,7 +234,7 @@
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+            #include "ThreeTone/ToonThreeToneInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -351,7 +351,7 @@
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+            #include "ThreeTone/ToonThreeToneInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -398,7 +398,7 @@
 
             // -------------------------------------
             // Includes
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitInput.hlsl"
+            #include "ThreeTone/ToonThreeToneInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }

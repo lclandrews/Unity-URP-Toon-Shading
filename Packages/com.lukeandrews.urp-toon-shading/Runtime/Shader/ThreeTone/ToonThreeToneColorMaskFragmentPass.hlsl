@@ -1,5 +1,5 @@
-#ifndef TOON_THREE_TONE_FRAG_PASS_INCLUDED
-#define TOON_THREE_TONE_FRAG_PASS_INCLUDED
+#ifndef TOON_THREE_TONE_COLOR_MASK_FRAG_PASS_INCLUDED
+#define TOON_THREE_TONE_COLOR_MASK_FRAG_PASS_INCLUDED
 
 #if defined(LOD_FADE_CROSSFADE)
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
@@ -23,6 +23,9 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
 
     ToonSurfaceData surfaceData;
     InitToonSurfaceData(uv, surfaceData);    
+
+    half3 colorMask = SampleColorMask(uv, TEXTURE2D_ARGS(_ColorMaskMap, sampler_ColorMaskMap), _ColorMaskRColor, _ColorMaskGColor, _ColorMaskBColor, _ColorMaskAColor);
+    surfaceData.albedo.xyz = surfaceData.albedo.xyz * colorMask;
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);

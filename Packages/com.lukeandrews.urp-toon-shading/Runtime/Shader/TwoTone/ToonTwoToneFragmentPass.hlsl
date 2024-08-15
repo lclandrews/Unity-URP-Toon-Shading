@@ -32,7 +32,8 @@ void ToonPassFragment(Varyings input, out half4 outColor : SV_Target0
     InitToonInputData(input, surfaceData.normalTS, inputData);
     
 #ifdef _DBUFFER
-    ApplyDecal(positionCS,
+    half metallic = 0;
+    ApplyDecal(input.positionCS,
         surfaceData.albedo,
         surfaceData.specular,
         inputData.normalWS,

@@ -24,6 +24,12 @@
         public const string BumpScale = "_BumpScale";
         public const string OcclusionStrength = "_OcclusionStrength";
 
+        public const string ColorMaskMap = "_ColorMaskMap";
+        public const string ColorMaskRColor = "_ColorMaskRColor";
+        public const string ColorMaskGColor = "_ColorMaskGColor";
+        public const string ColorMaskBColor = "_ColorMaskBColor";
+        public const string ColorMaskAColor = "_ColorMaskAColor";
+
         public const string OutlineWidth = "_OutlineWidth";
         public const string OutlineMap = "_OutlineMap";
         public const string OutlineStartFadeDistance = "_OutlineStartFadeDistance";

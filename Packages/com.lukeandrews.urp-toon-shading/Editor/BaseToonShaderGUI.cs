@@ -89,13 +89,13 @@ namespace ToonShading.Editor
         }
 
         private SavedBool _advancedLightingFoldout = null;
-        private SavedBool _SurfaceOptionsFoldout = null;
-        private SavedBool _SurfaceInputsFoldout = null;
-        private SavedBool _OutlineFoldout = null;
-        private SavedBool _AdvancedFoldout = null;
+        private SavedBool _surfaceOptionsFoldout = null;
+        private SavedBool _surfaceInputsFoldout = null;
+        private SavedBool _outlineFoldout = null;
+        private SavedBool _advancedFoldout = null;
 
         // Properties
-        private MaterialProperties toonStandardProperties;        
+        protected MaterialProperties ToonStandardProperties;        
 
 
         // collect properties from the material properties
@@ -109,7 +109,7 @@ namespace ToonShading.Editor
             baseColorProp = FindProperty(Properties.BaseColor, properties, false);
             emissionColorProp = FindProperty(Properties.EmissionColor, properties, false);
             queueOffsetProp = FindProperty(Properties.QueueOffset, properties, false);
-            toonStandardProperties = new MaterialProperties(properties);
+            ToonStandardProperties = new MaterialProperties(properties);
         }
 
         public override void OnGUI(MaterialEditor materialEditorIn, MaterialProperty[] properties)
@@ -136,10 +136,10 @@ namespace ToonShading.Editor
         {
             // Foldout states
             _advancedLightingFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.AdvancedLightingFoldout), true);
-            _SurfaceOptionsFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.SurfaceOptionsFoldout), true);
-            _SurfaceInputsFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.SurfaceInputsFoldout), true);
-            _OutlineFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.OutlineFoldout), false);
-            _AdvancedFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.AdvancedFoldout), false);
+            _surfaceOptionsFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.SurfaceOptionsFoldout), true);
+            _surfaceInputsFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.SurfaceInputsFoldout), true);
+            _outlineFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.OutlineFoldout), false);
+            _advancedFoldout = new SavedBool(GUIHeaders.GetStateKey(VariantName, GUIHeaders.AdvancedFoldout), false);
 
             foreach (var obj in materialEditor.targets)
                 ValidateMaterial((Material)obj);
@@ -152,26 +152,26 @@ namespace ToonShading.Editor
 
             EditorGUI.BeginChangeCheck();
 
-            _SurfaceOptionsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(_SurfaceOptionsFoldout.value, Styles.SurfaceOptions);
-            if (_SurfaceOptionsFoldout.value)
+            _surfaceOptionsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(_surfaceOptionsFoldout.value, Styles.SurfaceOptions);
+            if (_surfaceOptionsFoldout.value)
             {
                 DrawSurfaceOptions(material);
                 EditorGUILayout.Space();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();            
 
-            _SurfaceInputsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(_SurfaceInputsFoldout.value, Styles.SurfaceInputs);
-            if (_SurfaceInputsFoldout.value)
+            _surfaceInputsFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(_surfaceInputsFoldout.value, Styles.SurfaceInputs);
+            if (_surfaceInputsFoldout.value)
             {
                 DrawSurfaceInputs(material);
                 EditorGUILayout.Space();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
 
-            _OutlineFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(_OutlineFoldout.value, GUIStyles.OutlineSettingsText);
-            if (_OutlineFoldout.value)
+            _outlineFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(_outlineFoldout.value, GUIStyles.OutlineSettingsText);
+            if (_outlineFoldout.value)
             {
-                DrawOutlineArea(toonStandardProperties, materialEditor, material);
+                DrawOutlineArea(ToonStandardProperties, materialEditor, material);
                 EditorGUILayout.Space();
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
@@ -184,8 +184,8 @@ namespace ToonShading.Editor
             }
             EditorGUILayout.EndFoldoutHeaderGroup();            
 
-            _AdvancedFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(_AdvancedFoldout.value, Styles.AdvancedLabel);
-            if (_AdvancedFoldout.value)
+            _advancedFoldout.value = EditorGUILayout.BeginFoldoutHeaderGroup(_advancedFoldout.value, Styles.AdvancedLabel);
+            if (_advancedFoldout.value)
             {
                 DrawAdvancedOptions(material);
                 EditorGUILayout.Space();
@@ -246,12 +246,12 @@ namespace ToonShading.Editor
         {
             //DrawLightingOptions();
             base.DrawSurfaceInputs(material);
-            DrawMaskMapArea(toonStandardProperties, materialEditor, material);
-            DrawSpecularArea(toonStandardProperties, materialEditor, material);
-            DrawNormalArea(materialEditor, toonStandardProperties.BumpMapProp, toonStandardProperties.BumpScaleProp);
-            DrawBacklightArea(toonStandardProperties, materialEditor, material);
-            DrawEdgeShineArea(toonStandardProperties, materialEditor, material);
-            DrawOcclusionArea(materialEditor, toonStandardProperties.MaskMap, toonStandardProperties.OcclusionStrength);
+            DrawMaskMapArea(ToonStandardProperties, materialEditor, material);
+            DrawSpecularArea(ToonStandardProperties, materialEditor, material);
+            DrawNormalArea(materialEditor, ToonStandardProperties.BumpMapProp, ToonStandardProperties.BumpScaleProp);
+            DrawBacklightArea(ToonStandardProperties, materialEditor, material);
+            DrawEdgeShineArea(ToonStandardProperties, materialEditor, material);
+            DrawOcclusionArea(materialEditor, ToonStandardProperties.MaskMap, ToonStandardProperties.OcclusionStrength);
             DrawEmissionProperties(material, true);
             DrawTileOffset(materialEditor, baseMapProp);
         }
@@ -283,7 +283,7 @@ namespace ToonShading.Editor
             if (backlightEnabled)
             {
                 EditorGUI.BeginChangeCheck();
-                materialEditor.ShaderProperty(toonStandardProperties.Backlight, GUIStyles.BacklightText);
+                materialEditor.ShaderProperty(ToonStandardProperties.Backlight, GUIStyles.BacklightText);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ValidateMaterial(material);
@@ -427,7 +427,7 @@ namespace ToonShading.Editor
         public void DrawSpecularTextureArea(MaterialProperties properties, MaterialEditor materialEditor, Material material)
         {
             //EditorGUI.BeginDisabledGroup(toonStandardProperties.specular.floatValue == 0.0f);
-            if (toonStandardProperties.Specular.floatValue == 1.0f)
+            if (ToonStandardProperties.Specular.floatValue == 1.0f)
             {
                 EditorGUI.indentLevel += 2;
                 materialEditor.TexturePropertySingleLine(GUIStyles.SpecTex, properties.SpecTexMap);

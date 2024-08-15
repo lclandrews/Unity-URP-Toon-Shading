@@ -1,4 +1,4 @@
-﻿Shader "Universal Render Pipeline/Toon Two Tone"
+﻿Shader "Universal Render Pipeline/Toon Two Tone Color Mask"
 {
     Properties
     {        
@@ -6,6 +6,12 @@
         [MainTexture] _BaseMap("Albedo", 2D) = "white" {}        
 
         _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
+
+        _ColorMaskMap("Color Mask", 2D) = "white" {}
+        _ColorMaskRColor("Color Mask (R) Color", Color) = (0.5,0.5,0.5)
+        _ColorMaskGColor("Color Mask (G) Color", Color) = (0.5,0.5,0.5)
+        _ColorMaskBColor("Color Mask (B) Color", Color) = (0.5,0.5,0.5)
+        _ColorMaskAColor("Color Mask (A) Color", Color) = (0.5,0.5,0.5)
 
         _BacklightStrength("Backlight Stength", Range(0.0, 2.5)) = 2.3
         _ShineColor("Edge Shine Color", Color) = (1.0, 1.0, 1.0)
@@ -93,7 +99,7 @@
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "TwoTone/ToonTwoToneInput.hlsl"
+            #include "TwoTone/ToonTwoToneColorMaskInput.hlsl"
             #include "ToonOutlinePass.hlsl"
 
             #pragma vertex ToonOutlinePassVertex
@@ -182,9 +188,9 @@
 
             // -------------------------------------
             // Includes
-            #include "TwoTone/ToonTwoToneInput.hlsl"
+            #include "TwoTone/ToonTwoToneColorMaskInput.hlsl"
             #include "TwoTone/ToonTwoToneVertexPass.hlsl"
-            #include "TwoTone/ToonTwoToneFragmentPass.hlsl"
+            #include "TwoTone/ToonTwoToneColorMaskFragmentPass.hlsl"
 
             #pragma vertex ToonPassVertex
             #pragma fragment ToonPassFragment            
@@ -234,7 +240,7 @@
 
             // -------------------------------------
             // Includes
-            #include "TwoTone/ToonTwoToneInput.hlsl"
+            #include "TwoTone/ToonTwoToneColorMaskInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -351,7 +357,7 @@
 
             // -------------------------------------
             // Includes
-            #include "TwoTone/ToonTwoToneInput.hlsl"
+            #include "TwoTone/ToonTwoToneColorMaskInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -398,7 +404,7 @@
 
             // -------------------------------------
             // Includes
-            #include "TwoTone/ToonTwoToneInput.hlsl"
+            #include "TwoTone/ToonTwoToneColorMaskInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLitDepthNormalsPass.hlsl"
             ENDHLSL
         }
@@ -470,5 +476,5 @@
     }
 
     FallBack "Hidden/Universal Render Pipeline/FallbackError"
-    CustomEditor "ToonShading.Editor.ToonTwoToneShaderGUI"
+    CustomEditor "ToonShading.Editor.ToonTwoToneColorMaskShaderGUI"
 }
